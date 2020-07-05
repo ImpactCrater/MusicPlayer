@@ -1,0 +1,4106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Web Music Player with Visualizer</title>
+</head>
+<body>
+
+<style type="text/css">
+span.inlineBlock
+{
+ display: inline-block;
+}
+</style>
+<div id="areaOfcanvas1" style="font-size: 90%; text-align: center">
+
+<div id="displayAreaOfMusicTitle1"
+ style="margin: 0 auto; margin-bottom: 2px;
+ background-color: #808080;
+ border-top: solid 4px #606060; border-left: solid 4px #4e4e4e;
+ border-right: solid 4px #202020; border-bottom: solid 4px #0e0e0e;
+ color: #cccccc"
+>
+<div id="displayAreaOfMusicTitle1_1"
+ style="padding: 2px;
+ background-color: #2e2e2e;
+ text-align: left; text-shadow: 1px 1px 1px #000000"
+>
+Click the title to jump to the location of the item.
+<div id="displayAreaOfMusicTitle1_1_1"
+ style="padding: 2px 8px;
+ background-color: #626460;
+ border-top: solid 2px #0e0e0e; border-left: solid 2px #202020;
+ border-right: solid 2px #4e4e4e; border-bottom: solid 2px #606060;
+ box-shadow:1px 1px 4px 2px #222420 inset;
+ text-align: left; color: #0e0e0e; font-size: 125%; text-shadow: 1px 1px 2px #202020"
+>
+♪
+</div>
+</div>
+</div>
+
+<canvas id="canvas1" style="vertical-align: bottom">
+<img src="/_images/blog/_a3a/musicvisualizer/m_JS_Music20Player_SS_(2017_06_22)_1_Resized_1.jpg" width="350" height="350" border="0" align="" alt="ウェブ音楽プレイヤーのヴィジュアライザーのスクリーンショット画像。" />
+</canvas><br />
+
+<div id="areaOfButton1" style="margin: 0 auto; margin-top: 2px; padding: 1px; background-color: #808080; color: #cccccc">
+
+<div id="areaOfButton1_1" style="background-color: #404040; text-align: center">
+<button id="buttounToPlayCanvas" onclick="toggleCanvasPlayOrStop()">Canvas Play / Stop</button>
+<button id="buttounToPlayMusic" onclick="toggleMusicPlayOrStop()">Music Play / Stop</button>
+</div>
+
+<div id="areaOfButton1_2" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+Controls for music.
+<div id="areaOfButton1_2_1" style="background-color: #404040; text-align: left">
+<div style="text-align: left; float: left">
+<label>Music Volume: <input type="range" id="rangeForMusicVolume" max="100" min="0" oninput="changeMusicVolume()"></label>
+<span id="indicatorOfMusicVolume"></span>
+</div>
+<div style="text-align: right">
+<label><input type="checkbox" name="checkboxToShuffleMusic" value="ShuffleMusic" checked="checked">Shuffle music</label>
+<button id="buttounToChangeToNextMusic" onclick="changeToNextMusic()">Next Music</button><br />
+</div>
+</div>
+
+</div>
+<div id="areaOfFile1" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+If you want to play music, please select your music directory.<br />
+<div id="areaOfFile1_1" style="background-color: #404040; text-align: left">
+<form id="musicFileSelectionForm">
+<div style="text-align: left; float: left">
+<input type="file" id="inputMusicFile" webkitdirectory directory multiple />
+</div>
+</form>
+<div style="text-align: right">
+<span id="indicatorOfPercentage" style="visibility: hidden">0%</span>
+<button id="buttounToAbortReading" onclick="abortLoading()">Cancel Loading</button>
+</div>
+</div>
+</div>
+
+<div id="areaOfButton1_3" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+Please select the type of sound from the following.
+<div id="areaOfButton1_3_1" style="background-color: #404040; text-align: left">
+<span class="inlineBlock"><label><input type="radio" name="radioButtonOfTypeOfSound" value="Sine" checked="checked">Sine Wave</label></span>
+<span class="inlineBlock"><label><input type="radio" name="radioButtonOfTypeOfSound" value="Triangle">Triangle Wave</label><br /></span>
+</div>
+</div>
+<div id="areaOfButton1_4" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+If you want random sound output, please check the option below.
+<div id="innerAreaOfButton1_4_1" style="background-color: #404040; text-align: left">
+<label><input type="checkbox" name="checkboxToPlayRandomSound" onclick="checkOptionOfPlayingRandomSound()" value="PlayRandomSound">Play Random Sound</label><br />
+</div>
+</div>
+<div id="areaOfButton1_5" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+<span class="inlineBlock">You can play the keyboard.</span> <span class="inlineBlock">Please select the octave number from the following.</span>
+<div id="innerAreaOfButton1_5_1" style="background-color: #404040; text-align: left">
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=0>0</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=1>1</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=2>2</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=3>3</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=4>4</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=5 checked>5</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=6>6</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=7>7</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=8>8</label>
+<label><input type="radio" name="radioButtonOfOctaveNumber" value=9>9</label>
+</div>
+</div>
+<div id="noteArea1" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+Key assignment.<br />
+<div id="noteArea1_1" style="background-color: #404040; text-align: left">
+<span class="inlineBlock">(z):C (s):Cs (x):D (d):Ds (c):E (v):F (g):Fs</span> <span class="inlineBlock">(b):G (h):Gs (n):A (j):As (m):B (,):C</span><br />
+<span class="inlineBlock">(q):C (2):Cs (w):D (3):Ds (e):E (r):F (5):Fs</span> <span class="inlineBlock">(t):G (6):Gs (y):A (7):As (u):B (i):C</span><br />
+<span class="inlineBlock">(Shift): Increase or decrease one octave.</span> <span class="inlineBlock">(1) or (9): Always G1.</span><br />
+</div>
+</div>
+
+<div id="musicListArea1" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
+Music Playlist.
+<div id="musicListArea1_2" style="background-color: #404040; text-align: left">
+<div style="text-align: left; float: left">
+<input type="checkbox" name="checkboxToHideUnselectedMusic" value="HideUnselectedItems" onclick="hideUnselectedMusic()">Hide Unselected Items</button>
+</div>
+<div style="text-align: right">
+<span class="inlineBlock">
+<form id="playlistFileSelectionForm">
+Import Playlist:
+<input type="file" id="inputPlaylistFile" accept="text/plain" />
+</form>
+</span>
+<span class="inlineBlock">
+<button id="buttounToExportPlaylist" onclick="exportPlaylist()">Export Playlist</button>
+</span>
+</div>
+</div>
+<div id="musicListArea1_3" style="background-color: #404040; text-align: left; overflow: auto;">
+<output id="listOfInputMusicFile"></output>
+</div>
+</div>
+
+</div>
+</div>
+
+<script type="text/javascript">
+
+
+// 他のファイルのグローバル変数とこのファイルのグローバル変数の衝突を避ける為に、コンストラクターでモジュール全体のスコープを形成し、即時実行する。
+/** @constructor */
+let globalObjectOfThisProgram = function()
+{
+///////////////////////////////////////////////////////
+
+
+let audioContext = null;
+let arrayOfURLOfSourceOfAudioFile = [];
+let audioTimer = null;
+
+let isCanvasOn = false;
+let isRandomSoundOutput = false;
+let isMinimalLevelToneOutput = false;
+let isMusicOutput = false;
+let nextMusicOutput = false;
+let changeMusicNext = false;
+let musicTitleCurrentlyPlaying = '';
+let musicNumberCurrentlyPlayingInWhole = 0;
+let musicNumberCurrentlyPlayingInSelected = 0;
+
+let instanceOfSetSoundOfMinimalLevelTone = null;
+let instanceOfSetSound = null;
+
+let instanceOfInteractiveCanvas = null;
+let lightParticleCoordinateX = [];
+let lightParticleCoordinateY = [];
+let lightParticleSize = [];
+let lightParticleAlpha = [];
+let lightParticleHue = [];
+let lightParticleMovementAmountX = [];
+let lightParticleMovementAmountY = [];
+let lightParticleChangeAmountOfMovementAmountX = [];
+let lightParticleChangeAmountOfMovementAmountY = [];
+let lightParticleCount = [];
+
+let lightLineLength = [];
+let lightLineCoordinateX = [];
+let lightLineCoordinateY = [];
+let lightLineMovementAmountX = [];
+let lightLineMovementAmountY = [];
+let lightLineAlpha = [];
+
+let instanceOfSpectrumVisualizer = null;
+let spectrumLeft =  null;
+let spectrumRight = null;
+let normalizedSpectrumLeft = [];
+let normalizedSpectrumRight = [];
+let coefficientValue = [];
+
+let instanceOfImportPlaylist = null;
+
+let fileList = [];
+let fileNameList = [];
+let fileSelectionStatusList = [];
+let listOfCheckedFileNumberToAllFileNumber = [];
+let numberOfWholeFile = 0;
+let numberOfSelectedFile = 0;
+
+
+///////////////////////////////////////////////////////
+
+
+// ボタンの状態を初期化する。
+let instanceOfButtonInitializer = null;
+/** @constructor */ 
+let buttonInitializer = function()
+{
+ // 非選択項目を隠す為のチェックボックスを使用不可能にする。
+ document.getElementsByName( 'checkboxToHideUnselectedMusic' )[0].disabled = true;
+
+ // 非選択項目を隠す為のチェックボックスをチェック解除する。
+ document.getElementsByName( 'checkboxToHideUnselectedMusic' )[0].checked = false;
+
+ // ファイル選択のフォームを初期化する。
+ document.getElementById( 'playlistFileSelectionForm' ).reset();
+
+ // プレイリスト取り込みボタンを使用不可能にする。
+ document.getElementById( 'inputPlaylistFile' ).disabled = true;
+
+ // プレイリスト書き出しボタンを使用不可能にする。
+ document.getElementById( 'buttounToExportPlaylist' ).disabled = true;
+
+ // ファイルの読み込み中止ボタンを使用不可能にする。
+ document.getElementById( 'buttounToAbortReading' ).disabled = true;
+ 
+ // 次の楽曲に変更するボタンを使用不可能にする。
+ document.getElementById( 'buttounToChangeToNextMusic' ).disabled = true;
+
+ // 音楽を再生するボタンを使用不可能にする。
+ document.getElementById( 'buttounToPlayMusic' ).disabled = true;
+};
+
+instanceOfButtonInitializer = new buttonInitializer();
+
+
+///////////////////////////////////////////////////////
+
+
+// 音の出力の引き金に関する値を格納する為のオブジェクトを定義する。
+let triggerForSoundOutput =
+{
+ 'isPushingDown':
+  {
+   'mouseButton': false,
+   'KeyZ': false, 'KeyS': false, 'KeyX': false, 'KeyD': false, 'KeyC': false, 'KeyV': false, 'KeyG': false,
+   'KeyB': false, 'KeyH': false, 'KeyN': false, 'KeyJ': false, 'KeyM': false, 'Comma': false,
+   'KeyQ': false, 'Digit2': false, 'KeyW': false, 'Digit3': false, 'KeyE': false, 'KeyR': false, 'Digit5': false,
+   'KeyT': false, 'Digit6': false, 'KeyY': false, 'Digit7': false, 'KeyU': false, 'KeyI': false,
+   'Digit1': false, 'Digit9': false
+  },
+ 'audioBufferSourceNode':
+  {
+   'autoSoundOutput': null,
+   'mouseButton': null,
+   'KeyZ': null, 'KeyS': null, 'KeyX': null, 'KeyD': null, 'KeyC': null, 'KeyV': null, 'KeyG': null,
+   'KeyB': null, 'KeyH': null, 'KeyN': null, 'KeyJ': null, 'KeyM': null, 'Comma': null,
+   'KeyQ': null, 'Digit2': null, 'KeyW': null, 'Digit3': null, 'KeyE': null, 'KeyR': null, 'Digit5': null,
+   'KeyT': null, 'Digit6': null, 'KeyY': null, 'Digit7': null, 'KeyU': null, 'KeyI': null,
+   'Digit1': null, 'Digit9': null
+  },
+ 'audioBuffer':
+  {
+   'autoSoundOutput': null,
+   'mouseButton': null,
+   'KeyZ': null, 'KeyS': null, 'KeyX': null, 'KeyD': null, 'KeyC': null, 'KeyV': null, 'KeyG': null,
+   'KeyB': null, 'KeyH': null, 'KeyN': null, 'KeyJ': null, 'KeyM': null, 'Comma': null,
+   'KeyQ': null, 'Digit2': null, 'KeyW': null, 'Digit3': null, 'KeyE': null, 'KeyR': null, 'Digit5': null,
+   'KeyT': null, 'Digit6': null, 'KeyY': null, 'Digit7': null, 'KeyU': null, 'KeyI': null,
+   'Digit1': null, 'Digit9': null
+  }
+};
+
+
+///////////////////////////////////////////////////////
+
+
+// Web Audio APIが使用可能かどうかを検査する。
+/** @constructor */ 
+let audioInitializer = function()
+{
+ try
+ {
+  audioContext = new ( window.AudioContext || window.webkitAudioContext )();
+ }
+ catch( error )
+ {
+  alert( 'Sorry. Web Audio API is not supported in this browser.\nTherefore, can\'t output sound.' );
+ }
+
+ if( !(window.File && window.FileReader && window.FileList && window.Blob) )
+ {
+  alert( 'Sorry. File APIs are not fully supported in this browser.\nTherefore, can\'t read audio files.' );
+ }
+
+
+ // オーディオ ファイルを読み取り、FFT アナライザーで解析する為の設定を行う。
+
+ // 初めにファイル選択のフォームを初期化する。
+ document.getElementById( 'musicFileSelectionForm' ).reset();
+
+ // 音楽再生ボタンを使用不可能にする。
+ document.getElementById( 'buttounToPlayMusic' ).disabled = true;
+
+ // 音楽の再生音量の調整スライダーを初期化する。
+ let elementOfRangeInputOfMusicVolume = document.getElementById( 'rangeForMusicVolume' );
+ elementOfRangeInputOfMusicVolume.value = 0.75 * (elementOfRangeInputOfMusicVolume.getAttribute( 'max' ) - elementOfRangeInputOfMusicVolume.getAttribute( 'min' ));
+ changeMusicVolume();
+
+ this.fileReader = new FileReader;
+ this.request = new XMLHttpRequest();
+ this.variableForFunctionOfHandlingLoadingStart = null;
+ this.variableForFunctionOfHandlingLoadingProgressIndication = null;
+ this.variableForFunctionOfHandlingLoadingError = null;
+ this.variableForFunctionOfHandlingLoadingAbort = null;
+ this.variableForFunctionOfHandlingLoadingTimeout = null;
+ this.variableForFunctionOfHandlingLoadingCompletion = null;
+ this.variableForFunctionOfHandlingFileSelection = null;
+ this.addLoadingStartHandler(); // オーディオ ファイルを読み込む際の進捗開始イヴェントのリスナーを設定する。
+ this.addLoadingProgressIndicationHandler(); // オーディオ ファイルを読み込む際の進捗イヴェントのリスナーを設定する。
+ this.addLoadingErrorHandler(); // オーディオ ファイルを読み込む際のエラー イヴェントのリスナーを設定する。
+ this.addLoadingAbortHandler(); // オーディオ ファイルの読み込み途中での終了イヴェントのリスナーを設定する。
+ this.addLoadingTimeoutHandler(); // オーディオ ファイルを読み込む際の時間切れイヴェントのリスナーを設定する。
+ this.addLoadingCompletionHandler(); // オーディオ ファイルの読み込みが完了した際のイヴェントのリスナーを設定する。
+ this.addFileSelectionHandler(); // オーディオ ファイルを選択した際のイヴェントのリスナーを設定する。
+
+ // エラー処理を行う。
+ this.fileReader.onerror = function( event )
+ {
+  switch( event.target.error.code )
+  {
+   case event.target.error.NOT_FOUND_ERR:
+    alert( 'Error: NOT_FOUND_ERR' );
+    break;
+
+   case event.target.error.SECURITY_ERR:
+    alert( 'Error: SECURITY_ERR' );
+    break;
+
+   case event.target.error.NOT_READABLE_ERR:
+    alert( 'Error: NOT_READABLE_ERR' );
+    break;
+
+   case event.target.error.ABORT_ERR:
+    // ファイルの読み取りが中止された場合。
+    break;
+
+   default:
+    alert( 'An error occurred.' );
+  }
+ };
+};
+
+// オーディオ ファイルを読み込む際の進捗開始イヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addLoadingStartHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingStart = function( event ){thisAudioInitializer.handleLoadingStart();};
+ this.request.addEventListener( 'loadstart', this.variableForFunctionOfHandlingLoadingStart, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルを読み込む際の進捗状況の表示を開始する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleLoadingStart = function()
+{
+ let elementOfIndicatorOfPercentage = document.getElementById( 'indicatorOfPercentage' );
+ elementOfIndicatorOfPercentage.style.visibility = 'visible';
+ document.getElementById( 'buttounToAbortReading' ).disabled = false;
+};
+
+// オーディオ ファイルを読み込む際の進捗イヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addLoadingProgressIndicationHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingProgressIndication = function( event ){thisAudioInitializer.handleLoadingProgressIndication( event );};
+ this.request.addEventListener( 'progress', this.variableForFunctionOfHandlingLoadingProgressIndication, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルを読み込む際の進捗状況の表示を行う為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleLoadingProgressIndication = function( event )
+{
+ let elementOfIndicatorOfPercentage = document.getElementById( 'indicatorOfPercentage' );
+ if( event.lengthComputable )
+ {
+  // ファイルを読み込んだ割合を百分率で求める。
+  let percentageOfReadingFile = Math.round( (event.loaded / event.total) * 100 );
+  if( percentageOfReadingFile < 100 )
+  {
+   // 進捗率をパーセンテージで表示する。
+   elementOfIndicatorOfPercentage.textContent = percentageOfReadingFile + '%';
+  }
+ }
+};
+
+// オーディオ ファイルを読み込む際のエラー イヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addLoadingErrorHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingError = function( event ){thisAudioInitializer.handleLoadingError();};
+ this.request.addEventListener( 'error', this.variableForFunctionOfHandlingLoadingError, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルを読み込む際のエラー処理を行う為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleLoadingError = function()
+{
+ let elementOfIndicatorOfPercentage = document.getElementById( 'indicatorOfPercentage' );
+ elementOfIndicatorOfPercentage.style.visibility = 'hidden';
+ document.getElementById( 'buttounToAbortReading' ).disabled = true;
+ alert( 'Error.' );
+};
+
+// オーディオ ファイルの読み込み途中での終了イヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addLoadingAbortHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingAbort = function( event ){thisAudioInitializer.handleLoadingAbort();};
+ this.request.addEventListener( 'abort', this.variableForFunctionOfHandlingLoadingAbort, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルの読み込み途中での終了の際の処理を行う為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleLoadingAbort = function()
+{
+ let elementOfIndicatorOfPercentage = document.getElementById( 'indicatorOfPercentage' );
+ elementOfIndicatorOfPercentage.style.visibility = 'hidden';
+ document.getElementById( 'buttounToAbortReading' ).disabled = true;
+};
+
+// オーディオ ファイルを読み込む際の時間切れイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addLoadingTimeoutHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingTimeout = function( event ){thisAudioInitializer.handleLoadingTimeout();};
+ this.request.addEventListener( 'timeout', this.variableForFunctionOfHandlingLoadingTimeout, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルを読み込み途中での時間切れの際の処理を行う為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleLoadingTimeout = function()
+{
+ let elementOfIndicatorOfPercentage = document.getElementById( 'indicatorOfPercentage' );
+ elementOfIndicatorOfPercentage.style.visibility = 'hidden';
+ document.getElementById( 'buttounToAbortReading' ).disabled = true;
+};
+
+// オーディオ ファイルの読み込みが完了した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addLoadingCompletionHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingCompletion = function( event ){thisAudioInitializer.handleLoadingCompletion();};
+ this.request.addEventListener( 'load', this.variableForFunctionOfHandlingLoadingCompletion, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルの読み込みが完了した際の処理を行う為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleLoadingCompletion = function()
+{
+ // オーディオ ファイルの読み込みが100%となった事を表示して進捗バーの表示を消す。
+ document.getElementById( 'buttounToAbortReading' ).disabled = true;
+ let elementOfIndicatorOfPercentage = document.getElementById( 'indicatorOfPercentage' );
+ elementOfIndicatorOfPercentage.textContent = '100%';
+ setTimeout( function()
+  {
+   elementOfIndicatorOfPercentage.textContent = '0%';
+   elementOfIndicatorOfPercentage.style.visibility = 'hidden';
+  }, 4000 );
+
+ // オーディオ ファイルをデコードしてAudioBufferSourceNodeのバッファーに入れる。
+ let audioData = this.request.response;
+ audioContext.decodeAudioData( audioData, function( arrayBufferOfReadFile )
+ {
+  instanceOfSetSound.audioBufferSourceNodeOfAudioFile.buffer = arrayBufferOfReadFile;
+ }, function(){alert( 'Error. ' );} );
+
+ // 音楽を出力させる。
+ instanceOfSetSound.outputMusic();
+
+ // 楽曲名を表示する。
+ let elementOfDisplayAreaOfMusicTitle = document.getElementById( 'displayAreaOfMusicTitle1_1_1' );
+ elementOfDisplayAreaOfMusicTitle.setAttribute( 'onclick', 'scrollToItem()' );
+ elementOfDisplayAreaOfMusicTitle.innerHTML = "♪ " + musicTitleCurrentlyPlaying;
+};
+
+// オーディオ ファイルを選択した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.addFileSelectionHandler = function()
+{
+ let thisAudioInitializer = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingFileSelection = function( event ){thisAudioInitializer.handleFileSelection( event );};
+ document.getElementById( 'inputMusicFile' ).addEventListener( 'change', this.variableForFunctionOfHandlingFileSelection, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// オーディオ ファイルを選択した際の処理を行う為のプロトタイプのメソッドを定義する。
+audioInitializer.prototype.handleFileSelection = function( event )
+{
+ let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+
+ let matchedFileList = [];
+ let inputFileList = event.target.files; // 新たなオブジェクトを宣言して、ファイル オブジェクトのリストである 'FileList' オブジェクトの参照の値渡しをする。
+ let output = []; // 出力内容を格納する為の配列を宣言する。
+
+ let i = 0;
+ let j = 0;
+ let maximumCount = inputFileList.length;
+ for( i = 0, j = 0; i < maximumCount; i++ )
+ {
+  if( !inputFileList[i].type.indexOf( 'audio' ) )
+  // もし対象がオーディオ ファイルであるならば以下の処理を行う。
+  {
+   matchedFileList[j] = inputFileList[i];
+   j++;
+  }
+ }
+
+
+ // クイックソートを行う関数の宣言。
+ // ここでは特別に、関数の外部で宣言された配列を並べ替える処理を行う。
+ function quicksort( boundaryOfLeft, boundaryOfRight )
+ {
+  if( boundaryOfLeft < boundaryOfRight )
+  // 区間内に複数個のデータがあるならば処理を行う。
+  {
+   // 奇数個のデータの中央の値を基準値として設定する。
+   let sampleData = [];
+   let pivot = 0;
+   let randomNumber = 0;
+   let numberOfSample = 3;
+   let i = 0;
+   let j = 0;
+
+   // ランダムにサンプル データを抽出する。
+   for( i = 0; i < numberOfSample; i++ )
+   {
+    randomNumber = Math.floor( Math.random() * (boundaryOfRight + 1 - boundaryOfLeft) + boundaryOfLeft );
+    sampleData[i] = matchedFileList[randomNumber]['webkitRelativePath'];
+   }
+
+   // バブル ソートを行う。
+   let temporaryData = null;
+   for( i = 0; i < numberOfSample - 1; i++ )
+   {
+    for( j = numberOfSample - 1; j > i; j-- )
+    {
+     if( sampleData[j] < sampleData[j - 1] )
+     {
+      temporaryData = sampleData[j - 1];
+      sampleData[j - 1] = sampleData[j];
+      sampleData[j] = temporaryData;
+     }
+    }
+   }
+
+   // 中央の値を取る。
+   pivot = sampleData[(numberOfSample - 1) / 2];
+
+   i = boundaryOfLeft;
+   j = boundaryOfRight;
+   while( true )
+   {
+    while( matchedFileList[i]['webkitRelativePath'] < pivot )
+    // 基準以上の値に出会うまで処理を行う。
+    {
+     i++;
+    }
+
+    while( matchedFileList[j]['webkitRelativePath'] > pivot )
+    // 基準以下の値に出会うまで処理を行う。
+    {
+     j--;
+    }
+
+    if( i >= j )
+    // もし左右の注目位置が一致または交差したならば処理を抜ける。
+    {
+     break;
+    }else
+    // 左右の注目位置が未だ離れているならばその位置の値を交換する。
+    {
+     temporaryData = matchedFileList[i];
+     matchedFileList[i] = matchedFileList[j];
+     matchedFileList[j] = temporaryData;
+
+     i++;
+     j--;
+    }
+   }
+
+   if( boundaryOfLeft < i - 1 )
+   // 未だ左側の区間内に複数のデータがあるならば処理を繰り返す。
+   {
+    quicksort( boundaryOfLeft, i - 1 );
+   }
+
+   if( j + 1 < boundaryOfRight )
+   // 未だ右側の区間内に複数のデータがあるならば処理を繰り返す。
+   {
+    quicksort( j + 1, boundaryOfRight );
+   }
+  }
+ }
+
+ quicksort( 0, matchedFileList.length - 1 );
+
+ maximumCount = matchedFileList.length;
+ for( i = 0; i < maximumCount; i++ )
+ {
+   // 対象となるファイルを示すURLを生成して配列に格納する。
+   arrayOfURLOfSourceOfAudioFile[i] = window.URL.createObjectURL( matchedFileList[i] );
+ }
+
+
+ // ファイルのリストを初期化する。
+ fileList.length = 0;
+ fileNameList.length = 0;
+
+ let filePath = '';
+ let previousFilePath = '';
+ for( i = 0; i < maximumCount; i++ )
+ {
+  // 選択したファイル名のラジオ ボタンのリストを生成する。
+
+  // ファイルの相対パスからファイル名以外の部分を取り出す。
+  filePath = matchedFileList[i]['webkitRelativePath'].slice( 0, - matchedFileList[i].name.length );
+
+  if( filePath !== previousFilePath )
+  // 前のファイルパスと一致しないならば以下の処理を行う。
+  {
+   output.push( '<div style="margin-top: 8px; padding: 4px 0px 2px 16px; background-color: #2e2e2e">', filePath, '</div>' );
+  }
+
+  previousFilePath = filePath;
+  if( checkboxToHideUnselectedMusic[0].checked === false )
+  // 非選択項目が隠されていないならば以下の処理を行う。
+  {
+   output.push(
+    '<div style="margin: 0 auto; margin: 0 auto; float: left" onclick="changeSelectionStatus(', i, ')">',
+    '<div style="margin: 0 auto; margin: 0 auto; position: relative; top: 2px; left: 2px; border-radius: 25%; height: 16px; width: 16px; background-color: #808080">',
+    '<div id="selectButtonOfMusic', i, '" style="margin: 0 auto; position: relative; top: 4px; border-radius: 25%; height: 8px; width: 8px; background-color: #eeeeee">',
+    '</div></div></div>' );
+  }
+  output.push(
+   '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+   matchedFileList[i].name,
+   '</div>' );
+
+  // ファイルのリストを記録して置く。
+  fileList[i] = matchedFileList[i]['webkitRelativePath'];
+  fileNameList[i] = matchedFileList[i].name;
+ }
+
+ numberOfWholeFile = fileList.length;
+
+ // 選択したファイル名のラジオ ボタンのリストを表示させる。
+ document.getElementById( 'listOfInputMusicFile' ).innerHTML = output.join( '' );
+
+ let divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + 0 );
+ divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+
+ musicNumberCurrentlyPlayingInWhole = 0;
+ musicNumberCurrentlyPlayingInSelected = 0;
+
+ // Web Storage APIでローカル ストレージに保存されているプレイリストを読み込む。
+ loadPlaylist();
+
+ // 音楽再生ボタンを使用可能にする。
+ document.getElementById( 'buttounToPlayMusic' ).disabled = false;
+
+ // プレイリスト書き出しボタンを使用可能にする。
+ document.getElementById( 'buttounToExportPlaylist' ).disabled = false;
+
+ // プレイリスト取り込みボタンを使用可能にする。
+ document.getElementById( 'inputPlaylistFile' ).disabled = false;
+
+ // 非選択項目を隠す為のチェックボックスを使用可能にする。
+ document.getElementsByName( 'checkboxToHideUnselectedMusic' )[0].disabled = false;
+
+ // 音楽が再生中であったならば、新たに読み込まれた楽曲を再生させる。
+ changeMusic( 0 );
+};
+
+
+///////////////////////////////////////////////////////
+
+
+// ファイルの読み取りを中止する為の関数の宣言と定義をする。
+function abortLoading()
+{
+ if( instanceOfAudioInitializer !== null )
+ {
+  instanceOfAudioInitializer.request.abort();
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// オーディオを初期化する。
+let instanceOfAudioInitializer = new audioInitializer();
+
+
+///////////////////////////////////////////////////////
+
+
+// 雑音発生防止の為の極微小音を出力する為のコンストラクターを関数式により定義する。
+/** @constructor */ 
+let setSoundOfMinimalLevelTone = function()
+{
+ // 音の出力時、停止時にグリッチ ノイズを出さない為に、常に極微小の値を出力して置く。
+ this.oscillatorNode = null;
+ this.gainNode = audioContext.createGain();
+};
+
+// 極微小音出力を開始する為のプロトタイプのメソッドを定義する。
+setSoundOfMinimalLevelTone.prototype.startSoundOfMinimalLevelTone = function()
+{
+ this.oscillatorNode = audioContext.createOscillator();
+
+ // OscillatorNodeの生成波形の種類を正弦波に設定する。
+ this.oscillatorNode.type = 'sine';
+
+ // OscillatorNodeをGainNodeに接続する。
+ this.oscillatorNode.connect( this.gainNode );
+
+ // GainNodeを出力先であるAudioDestinationNodeに接続する。
+ this.gainNode.connect( audioContext.destination );
+
+ // 出力を極微小に設定する。
+ this.gainNode.gain.value = 0.0001;
+
+ // 極微小音出力を開始する。
+ instanceOfSetSoundOfMinimalLevelTone.oscillatorNode.start( 0 );
+};
+
+// 極微小音出力を停止する為のプロトタイプのメソッドを定義する。
+setSoundOfMinimalLevelTone.prototype.stopSoundOfMinimalLevelTone = function()
+{
+ // 極微小音出力を停止する。
+ instanceOfSetSoundOfMinimalLevelTone.oscillatorNode.stop( 0 );
+};
+
+
+///////////////////////////////////////////////////////
+
+
+// 音の設定をするコンストラクターを関数式により定義する。
+/** @constructor */ 
+let setSound = function()
+{
+ // プロパティーを定義して固有の初期値を設定する。
+ this.timerForRandomSoundOutput = null;
+
+ this.typeOfSound = '';
+
+ this.numberOfChannel = 2;
+ this.multiplicationRateOfSampleRate = 4;
+ this.duration = 0;
+ this.frequency = 0;
+ this.preparationTimeGain = 0.001;
+ this.preparationTime = 0.01;
+ this.attackTime = 0;
+ this.decayTime = 0;
+ this.sustainGain = 0.5;
+ this.sustainTime = 0.2;
+ this.releaseTime = 0;
+ this.outputGainValue = 0;
+ this.isLoopOn = false;
+ this.startOffset = 0;
+ this.endOffset = 0;
+
+ this.musicPlaybackGain = 0;
+ this.isMusicBeingOutput = false;
+
+ this.keyboardSoundLength = 256;
+ this.autoPlaySoundLength = 16;
+
+ this.frameCountOfAll = 0;
+ this.frameCountOfPreparationTime = 0;
+ this.frameCountOfAttackTime = 0;
+ this.frameCountOfDecayTime = 0;
+ this.frameCountOfSustainTime = 0;
+ this.frameCountOfReleaseTime = 0;
+ this.preparationTimeFrequency = 0;
+
+ this.audioBufferSourceNodeOfAudioFile = null;
+ this.channelSplitterNode = audioContext.createChannelSplitter( this.numberOfChannel );
+ this.channelMergerNode = audioContext.createChannelMerger( this.numberOfChannel );
+ this.gainNodeForMusicPlayback = audioContext.createGain();
+ this.sizeOfFFT = 256;
+ this.smoothingTimeConstant = 0.6;
+ this.analyserNodeLeft = audioContext.createAnalyser();
+ this.analyserNodeRight = audioContext.createAnalyser();
+ this.compressorNode = audioContext.createDynamicsCompressor();
+
+
+ // 音と周波数の対応表を生成する。
+
+ let sound = [];
+
+ let numberOfOctave = 10;
+ let i = 0;
+ let j = 0;
+ for( i = 0; i < 12; i++ )
+ {
+  sound[i] = [];
+  for( j = 0; j < numberOfOctave; j++ )
+  {
+   sound[i][j] = 440 * Math.pow( 2, ((-57 + i + 12 * j) / 12) );
+  }
+ }
+
+ this.soundList =
+  {
+   'c': sound[0], 'cs': sound[1], 'd': sound[2], 'ds': sound[3], 'e': sound[4], 'f': sound[5],
+   'fs': sound[6], 'g': sound[7], 'gs': sound[8], 'a': sound[9], 'as': sound[10], 'b': sound[11]
+  };
+};
+
+// 正弦波の音を生成する為のプロトタイプのメソッドを定義する。
+setSound.prototype.createCyclicWaveform = function( playingMode, keyOfTriggerForSoundOutput )
+{
+ let variableForCalculation = 0;
+
+ if( playingMode === 'MouseDownOrTap' )
+ // もしクリックまたはタップによる入力を受け付けるモードが選択されている場合には以下の処理を行う。
+ {
+  variableForCalculation =
+   ((0.06 / (1 + Math.pow( Math.E, - 80 * (pointerCoordinate.mouseDownHeightOverCanvasHeight - 0.005) )))
+   + (0.4 / (1 + Math.pow( Math.E, - 15.0 * (pointerCoordinate.mouseDownHeightOverCanvasHeight - 0.4) )))
+   + (0.75 / (1 + Math.pow( Math.E, - 7.0 * (pointerCoordinate.mouseDownHeightOverCanvasHeight - 0.9) ))))
+   * instanceOfSetSound.soundList['a'][5];
+
+  instanceOfSetSound.frequency = instanceOfSetSound.soundList['c'][0] + 0.01 * Math.pow( variableForCalculation, 2);
+
+  variableForCalculation = 0.04 - (0.04 / (1 + Math.pow( Math.E, - 0.01 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][2]) ))) + (1 / (Math.pow( instanceOfSetSound.frequency, 0.5 ) + instanceOfSetSound.soundList['a'][2]));
+
+  instanceOfSetSound.attackTime = variableForCalculation;
+  instanceOfSetSound.decayTime = variableForCalculation;
+  instanceOfSetSound.sustainTime = 0.2 + 0.6 * pointerCoordinate.mouseDownXOverCanvasWidth * pointerCoordinate.mouseDownXOverCanvasWidth;
+  instanceOfSetSound.releaseTime = 0.4 + pointerCoordinate.mouseDownXOverCanvasWidth;
+ }else if( playingMode === 'Keyboard' )
+ // もしキーボードから入力を受け付けるモードが選択されている場合には以下の処理を行う。
+ {
+  variableForCalculation = 0.04 - (0.04 / (1 + Math.pow( Math.E, - 0.01 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][2]) ))) + (1 / (Math.pow( instanceOfSetSound.frequency, 0.5 ) + instanceOfSetSound.soundList['a'][2]));
+
+  instanceOfSetSound.attackTime = variableForCalculation;
+  instanceOfSetSound.decayTime = variableForCalculation;
+  instanceOfSetSound.sustainTime = 0.2 + 0.000002 * instanceOfSetSound.keyboardSoundLength * instanceOfSetSound.keyboardSoundLength;
+  instanceOfSetSound.releaseTime = 0.6 + 0.000001 * instanceOfSetSound.keyboardSoundLength * instanceOfSetSound.keyboardSoundLength;
+ }else if( playingMode === 'Auto' )
+ // もし自動リズム演奏モードが選択されている場合には以下の処理を行う。
+ {
+  variableForCalculation = 0.04 - (0.04 / (1 + Math.pow( Math.E, - 0.01 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][2]) ))) + (1 / (Math.pow( instanceOfSetSound.frequency, 0.5 ) + instanceOfSetSound.soundList['a'][2]));
+
+  instanceOfSetSound.attackTime = variableForCalculation;
+  instanceOfSetSound.decayTime = variableForCalculation;
+  instanceOfSetSound.sustainTime = 0.2 + 0.000002 * instanceOfSetSound.autoPlaySoundLength * instanceOfSetSound.autoPlaySoundLength;
+  instanceOfSetSound.releaseTime = 0.6 + 0.000001 * instanceOfSetSound.autoPlaySoundLength * instanceOfSetSound.autoPlaySoundLength;
+ }
+
+ instanceOfSetSound.durationOfAllOfSound = instanceOfSetSound.preparationTime + instanceOfSetSound.attackTime + instanceOfSetSound.decayTime + instanceOfSetSound.sustainTime + instanceOfSetSound.releaseTime;
+ instanceOfSetSound.outputGainValue = 0.9
+  - (0.675 / (1 + Math.pow( Math.E, - 0.02 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][3]) )))
+  - (0.1 / (1 + Math.pow( Math.E, - 0.0005 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][4]) )));
+
+ let maximumFrequency = instanceOfSetSound.frequency + instanceOfSetSound.soundList['a'][3]
+  - ((instanceOfSetSound.soundList['a'][3] - instanceOfSetSound.soundList['a'][2]) / (1 + Math.pow( Math.E, - 0.02 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][0] / 2) )))
+  - ((instanceOfSetSound.soundList['a'][2] - instanceOfSetSound.soundList['a'][0]) / (1 + Math.pow( Math.E, - 0.075 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][1]) )))
+  - ((instanceOfSetSound.soundList['a'][0] - instanceOfSetSound.soundList['a'][0] / 2) / (1 + Math.pow( Math.E, - 0.05 * (instanceOfSetSound.frequency - instanceOfSetSound.soundList['a'][2]) )));
+ let centralFrequency = instanceOfSetSound.frequency;
+ let maximumFrequencyDeviation = maximumFrequency - centralFrequency;
+ let frequencyOfSignal = 0.25 / instanceOfSetSound.attackTime;
+ let angularFrequencyOfSignal = 2 * Math.PI * frequencyOfSignal;
+ let modulationIndex = maximumFrequencyDeviation / frequencyOfSignal;
+ let phaseShiftCausedByFrequencyModurationInAttackTime = modulationIndex * Math.sin( angularFrequencyOfSignal * instanceOfSetSound.attackTime );
+
+ // AudioContextのサンプル レートでduration秒間のバッファーを生成する。
+ instanceOfSetSound.frameCountOfAll = audioContext.sampleRate * instanceOfSetSound.durationOfAllOfSound * instanceOfSetSound.multiplicationRateOfSampleRate;
+ instanceOfSetSound.frameCountOfPreparationTime = audioContext.sampleRate * instanceOfSetSound.preparationTime * instanceOfSetSound.multiplicationRateOfSampleRate;
+ instanceOfSetSound.frameCountOfAttackTime = audioContext.sampleRate * instanceOfSetSound.attackTime * instanceOfSetSound.multiplicationRateOfSampleRate;
+ instanceOfSetSound.frameCountOfDecayTime = audioContext.sampleRate * instanceOfSetSound.decayTime * instanceOfSetSound.multiplicationRateOfSampleRate;
+ instanceOfSetSound.frameCountOfSustainTime = audioContext.sampleRate * instanceOfSetSound.sustainTime * instanceOfSetSound.multiplicationRateOfSampleRate;
+ instanceOfSetSound.frameCountOfReleaseTime = audioContext.sampleRate * instanceOfSetSound.releaseTime * instanceOfSetSound.multiplicationRateOfSampleRate;
+ instanceOfSetSound.preparationTimeFrequency = Math.floor( maximumFrequency * instanceOfSetSound.preparationTime ) / instanceOfSetSound.preparationTime;
+
+ triggerForSoundOutput.audioBuffer[keyOfTriggerForSoundOutput] = audioContext.createBuffer( instanceOfSetSound.numberOfChannel, instanceOfSetSound.frameCountOfAll, audioContext.sampleRate );
+
+ // オーディオ コンテキストのデータの配列を得る。
+ let channel = 0;
+ let bufferForCreateWaveform =  triggerForSoundOutput.audioBuffer[keyOfTriggerForSoundOutput].getChannelData( channel );
+
+
+ let frameCountOfAll = instanceOfSetSound.frameCountOfAll;
+ let i = 0;
+ let j = 0;
+
+ // ADSR型の音声データを生成する。
+ // V_cm = sin( 2 * pi * f * t );
+
+ // PreparationTime
+ let frameCountLimit = instanceOfSetSound.frameCountOfPreparationTime;
+ let angularFrequencyOfCarrierWaveOverSampleRate = 2 * Math.PI * instanceOfSetSound.preparationTimeFrequency / audioContext.sampleRate / instanceOfSetSound.multiplicationRateOfSampleRate;
+ let preparationTimeGain = instanceOfSetSound.preparationTimeGain;
+ for( i = 0; i < frameCountLimit; i++ )
+ {
+  bufferForCreateWaveform[i] = Math.sin( angularFrequencyOfCarrierWaveOverSampleRate * i )
+   * preparationTimeGain;
+ }
+
+ if( instanceOfSetSound.typeOfSound === 'Sine' )
+ // もし音の種類の指定が '正弦波' であれば以下の処理を行う。
+ {
+  // AttackTime
+  frameCountLimit += instanceOfSetSound.frameCountOfAttackTime;
+  angularFrequencyOfCarrierWaveOverSampleRate = 2 * Math.PI * centralFrequency / audioContext.sampleRate / instanceOfSetSound.multiplicationRateOfSampleRate;
+  let angularFrequencyOfSignalOverSampleRate = angularFrequencyOfSignal / audioContext.sampleRate / instanceOfSetSound.multiplicationRateOfSampleRate;
+  let angularFrequencyOfEnvelopeOverFrameCount = Math.PI / 2 / instanceOfSetSound.frameCountOfAttackTime;
+  let outputGainValue = instanceOfSetSound.outputGainValue;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   // 周波数変調を掛けるが、位相は時間軸上で後方へ行くに従ってずれる。
+   // AttackTimeの開始時点では位相差は無い。
+   bufferForCreateWaveform[i] =
+    Math.sin( angularFrequencyOfCarrierWaveOverSampleRate * i
+    + modulationIndex * Math.sin( angularFrequencyOfSignalOverSampleRate * j ) )
+    * outputGainValue * Math.sin( angularFrequencyOfEnvelopeOverFrameCount * j );
+  }
+
+  // DecayTime
+  frameCountLimit += instanceOfSetSound.frameCountOfDecayTime;
+  angularFrequencyOfEnvelopeOverFrameCount = Math.PI / instanceOfSetSound.frameCountOfDecayTime;
+  let sustainGain = instanceOfSetSound.sustainGain;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   bufferForCreateWaveform[i] =
+    Math.sin( angularFrequencyOfCarrierWaveOverSampleRate * i
+    + phaseShiftCausedByFrequencyModurationInAttackTime )
+    * outputGainValue * (((Math.cos( angularFrequencyOfEnvelopeOverFrameCount * j ) + 1) / 2) * (1 - sustainGain) + sustainGain);
+  }
+
+  // SustainTime
+  frameCountLimit += instanceOfSetSound.frameCountOfSustainTime;
+  let totalGainValue = sustainGain * outputGainValue;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   bufferForCreateWaveform[i] =
+    Math.sin( angularFrequencyOfCarrierWaveOverSampleRate * i
+    + phaseShiftCausedByFrequencyModurationInAttackTime )
+    * totalGainValue;
+  }
+
+  // ReleaseTime
+  let frameCountOfReleaseTime = instanceOfSetSound.frameCountOfReleaseTime;
+  frameCountLimit += frameCountOfReleaseTime;
+  angularFrequencyOfCarrierWaveOverSampleRate = 2 * Math.PI * centralFrequency / audioContext.sampleRate;
+  let coefficientOfTimeInReleaseTime =
+   audioContext.sampleRate * 0.0075 * (1 + 8 * ((1 / (1 + Math.pow( Math.E, - 0.3 * (20 - centralFrequency) ))) + (1 / (1 + Math.pow( Math.E, - 0.1 * (centralFrequency - 120))))));
+  let multiplicationRateOfSampleRate = instanceOfSetSound.multiplicationRateOfSampleRate;
+  coefficientOfTimeInReleaseTime *= multiplicationRateOfSampleRate;
+   // シグモイド関数の合成による重み付け。 // 低周波数領域の一部を窪ませたグラフとなる。
+
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   bufferForCreateWaveform[i] =
+   Math.sin( angularFrequencyOfCarrierWaveOverSampleRate * (i / multiplicationRateOfSampleRate - Math.pow( j / coefficientOfTimeInReleaseTime, 2 ))
+    + phaseShiftCausedByFrequencyModurationInAttackTime )
+    * totalGainValue * (frameCountOfReleaseTime - j) / frameCountOfReleaseTime;
+  }
+ }else if( instanceOfSetSound.typeOfSound === 'Triangle' )
+ // もし音の種類の指定が '三角波' であれば以下の処理を行う。
+ {
+  // AttackTime
+  frameCountLimit += instanceOfSetSound.frameCountOfAttackTime;
+  let angularFrequencyOfEnvelopeOverFrameCount = Math.PI / 2 / instanceOfSetSound.frameCountOfAttackTime;
+  let maximumFrequencyDeviationOverCentralFrequency = maximumFrequencyDeviation / centralFrequency;
+  let amountOfChange = 4 / (audioContext.sampleRate * instanceOfSetSound.multiplicationRateOfSampleRate / centralFrequency);
+  let amountOfChangeAtThisPoint = 0;
+  let value = bufferForCreateWaveform[i - 1];
+  let outputGainValue = instanceOfSetSound.outputGainValue;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   // 周波数を変化させる。
+
+   amountOfChangeAtThisPoint = amountOfChange
+    * (1 + maximumFrequencyDeviationOverCentralFrequency * (1 + Math.sin( angularFrequencyOfEnvelopeOverFrameCount * j + Math.PI )));
+
+   value += amountOfChangeAtThisPoint;
+
+   if( value > 1 )
+   {
+    value = 2 - value;
+    amountOfChange *= - 1;
+   }else if( value < - 1 )
+   {
+    value = - 2 - value;
+    amountOfChange *= - 1;
+   }
+
+   bufferForCreateWaveform[i] = value * outputGainValue * Math.sin( angularFrequencyOfEnvelopeOverFrameCount * j );
+  }
+
+  // DecayTime
+  frameCountLimit += instanceOfSetSound.frameCountOfDecayTime;
+  angularFrequencyOfEnvelopeOverFrameCount = Math.PI / instanceOfSetSound.frameCountOfDecayTime;
+  let sustainGain = instanceOfSetSound.sustainGain;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   value += amountOfChange;
+
+   if( value > 1 )
+   {
+    value = 2 - value;
+    amountOfChange *= - 1;
+   }else if( value < - 1 )
+   {
+    value = - 2 - value;
+    amountOfChange *= - 1;
+   }
+
+   bufferForCreateWaveform[i] =
+    value * outputGainValue * (((Math.cos( angularFrequencyOfEnvelopeOverFrameCount * j ) + 1) / 2) * (1 - sustainGain) + sustainGain);
+  }
+
+  // SustainTime
+  frameCountLimit += instanceOfSetSound.frameCountOfSustainTime;
+  let totalGainValue = sustainGain * outputGainValue;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   value += amountOfChange;
+
+   if( value > 1 )
+   {
+    value = 2 - value;
+    amountOfChange *= - 1;
+   }else if( value < - 1 )
+   {
+    value = - 2 - value;
+    amountOfChange *= - 1;
+   }
+
+   bufferForCreateWaveform[i] = value * totalGainValue;
+  }
+
+  // ReleaseTime
+  let frameCountOfReleaseTime = instanceOfSetSound.frameCountOfReleaseTime;
+  frameCountLimit += frameCountOfReleaseTime;
+  for( j = 0; i < frameCountLimit; i++, j++ )
+  {
+   value += amountOfChange;
+
+   if( value > 1 )
+   {
+    value = 2 - value;
+    amountOfChange *= - 1;
+   }else if( value < - 1 )
+   {
+    value = - 2 - value;
+    amountOfChange *= - 1;
+   }
+
+   bufferForCreateWaveform[i] = value * totalGainValue * (frameCountOfReleaseTime - j) / frameCountOfReleaseTime;
+  }
+ }
+
+ // バッファーを0で埋める。
+ // 時間の計算に於ける精度の限界による誤差が原因で最後に配列の要素が余る事がある為である。
+ for( ; i < frameCountOfAll; i++ )
+ {
+  bufferForCreateWaveform[i] = 0; // 配列の最後の要素まで0を書き込む。
+ }
+
+
+ // バッファーをチャンネル数分だけ複製する。
+ for( channel = 0; channel < instanceOfSetSound.numberOfChannel; channel++ )
+ {
+   triggerForSoundOutput.audioBuffer[keyOfTriggerForSoundOutput].copyToChannel( bufferForCreateWaveform, channel, 0 );
+ }
+
+
+ // SustainTimeに於けるループ再生部分の開始位置と終了位置を秒数で設定する。
+
+ instanceOfSetSound.startOffset = (instanceOfSetSound.preparationTime + instanceOfSetSound.attackTime + instanceOfSetSound.decayTime) * instanceOfSetSound.multiplicationRateOfSampleRate;
+
+ // 波数を小数点以下切り捨てで求める。
+ let numberOfWave = Math.floor( instanceOfSetSound.sustainTime * centralFrequency );
+ instanceOfSetSound.endOffset = instanceOfSetSound.startOffset + numberOfWave / centralFrequency * instanceOfSetSound.multiplicationRateOfSampleRate;
+
+ // 音を出力させる。
+ instanceOfSetSound.outputSound( keyOfTriggerForSoundOutput );
+};
+
+// 音の生成を開始する為のプロトタイプのメソッドを定義する。
+setSound.prototype.playSound = function( playingMode, keyOfTriggerForSoundOutput )
+{
+ // AudioBufferSourceNodeのループ再生の設定をオンにする。
+ instanceOfSetSound.isLoopOn = true;
+
+ // AudioBufferSourceNodeの再生速度を設定する。
+ instanceOfSetSound.multiplicationRateOfSampleRate = 4.0;
+
+ instanceOfSetSound.createCyclicWaveform( playingMode, keyOfTriggerForSoundOutput );
+};
+
+// ランダム発音する為のプロトタイプのメソッドを定義する。
+setSound.prototype.playRandomSound = function()
+{
+ // 音の種類を選択する為のラジオ ボタンの内、どのラジオ ボタンが押されているかを調べる。
+ let listOfRadioButton = document.getElementsByName( 'radioButtonOfTypeOfSound' );
+ let i = 0;
+ for( i = 0; i < listOfRadioButton.length; i++ )
+ {
+  if( listOfRadioButton[i].checked )
+  {
+   instanceOfSetSound.typeOfSound = listOfRadioButton[i].value;
+   break;
+  }
+ }
+
+ // タイマーによるタイムアウト動作で音を再生する関数を実行する。
+ let playingMode = 'Auto';
+ let keyOfTriggerForSoundOutput = 'autoSoundOutput';
+ let soundNumber = Math.floor( Math.random() * 12 );
+ let octaveNumber = Math.floor( Math.random() * 6 ) + 2;
+ let soundLength = 400;
+ let intervalTime = Math.floor( Math.random() * 1200 );
+ let soundName = '';
+
+ switch( soundNumber )
+ {
+  case 0:
+   soundName = 'c';
+   break;
+
+  case 1:
+   soundName = 'cs';
+   break;
+
+  case 2:
+   soundName = 'd';
+   break;
+
+  case 3:
+   soundName = 'ds';
+   break;
+
+  case 4:
+   soundName = 'e';
+   break;
+
+  case 5:
+   soundName = 'f';
+   break;
+
+  case 6:
+   soundName = 'fs';
+   break;
+
+  case 7:
+   soundName = 'g';
+   break;
+
+  case 8:
+   soundName = 'gs';
+   break;
+
+  case 9:
+   soundName = 'a';
+   break;
+
+  case 10:
+   soundName = 'as';
+   break;
+
+  case 11:
+   soundName = 'b';
+   break;
+
+  default:
+   break;
+ }
+
+ // ランダムな音を設定する。
+ this.timerForRandomSoundOutput = setTimeout( function()
+  {
+   instanceOfSetSound.frequency = instanceOfSetSound.soundList[soundName][octaveNumber];
+   instanceOfSetSound.autoPlaySoundLength = soundLength;
+   instanceOfSetSound.isLoopOn = false;
+   instanceOfSetSound.multiplicationRateOfSampleRate = 1.0;
+   instanceOfSetSound.createCyclicWaveform( playingMode, keyOfTriggerForSoundOutput );
+   if( instanceOfInteractiveCanvas !== null )
+   {
+    instanceOfInteractiveCanvas.processStartOfVisualEffect( playingMode );
+   }
+   instanceOfSetSound.playRandomSound();
+  }, intervalTime );
+};
+
+// 音の再生及び自動リズム演奏を停止させるプロトタイプのメソッドを定義する。
+setSound.prototype.stopPlayingSound = function()
+{
+ let i = 0;
+
+ // 自動リズム演奏が動作中ならばこれを停止させる。
+ if( instanceOfSetSound.timerForAutoPlayScore !== null )
+ {
+  for( i = 0; i < this.timerForAutoPlayScore.length; i++ )
+  // 全てのリズムの再生用タイマーを停止させる。
+  {
+   clearTimeout( instanceOfSetSound.timerForAutoPlayScore[i] );
+  }
+  instanceOfSetSound.timerForAutoPlayScore = null;
+ }
+
+ // 自動ランダム発音が動作中ならばこれを停止させる。
+ if( this.timerForRandomSoundOutput !== null )
+ {
+  clearTimeout( instanceOfSetSound.timerForRandomSoundOutput );
+  instanceOfSetSound.timerForRandomSoundOutput = null;
+ }
+
+ // 全ての音の再生のループを終了する。
+ instanceOfSetSound.isLoopOn = false;
+ let arrayOfKeyOfTriggerForSoundOutput = Object.keys( triggerForSoundOutput.isPushingDown );
+ let keyOfTriggerForSoundOutput = null;
+ for( i = 0; i < arrayOfKeyOfTriggerForSoundOutput.length; i++ )
+ {
+  keyOfTriggerForSoundOutput = arrayOfKeyOfTriggerForSoundOutput[i];
+
+  triggerForSoundOutput.isPushingDown[keyOfTriggerForSoundOutput] = false;
+  if( triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput] !== null )
+  // キーのソースが存在するならば以下の処理を行う。
+  {
+   // AudioBufferSourceNodeのループ再生の設定をオフにして音の再生のループを終了させる。
+   triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].loop = false;
+  }
+ }
+};
+
+// 生成した音を出力する為のプロトタイプのメソッドを定義する。
+setSound.prototype.outputSound = function( keyOfTriggerForSoundOutput )
+{
+ // AudioBufferSourceNodeを取得する。
+ // これはAudioBufferを再生する時に使うAudioNodeである。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput] = audioContext.createBufferSource();
+
+ // 過大入力による音割れを防ぐ為にコンプレッサーを接続する。
+ instanceOfSetSound.compressorNode.attack.value = 0.0;
+ instanceOfSetSound.compressorNode.ratio.value = 20;
+
+ // AudioBufferSourceNodeに生成したデータが入るバッファーを設定する。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].buffer = triggerForSoundOutput.audioBuffer[keyOfTriggerForSoundOutput];
+
+ // AudioBufferSourceNodeに再生速度を設定する。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].playbackRate.value = instanceOfSetSound.multiplicationRateOfSampleRate;
+
+ // AudioBufferSourceNodeにループ再生のオン/オフを設定する。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].loop = instanceOfSetSound.isLoopOn;
+
+ // AudioBufferSourceNodeにループ再生の先端の時間を設定する。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].loopStart = instanceOfSetSound.startOffset;
+
+ // AudioBufferSourceNodeにループ再生の末端の時間を設定する。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].loopEnd = instanceOfSetSound.endOffset;
+
+ // AudioBufferSourceNodeをCompressorNodeに接続する。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].connect( instanceOfSetSound.compressorNode );
+
+ // CompressorNodeを出力先に接続する。
+ instanceOfSetSound.compressorNode.connect( audioContext.destination );
+
+ // 音源の再生を始める。
+ triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].start( 0 );
+};
+
+// 音楽ファイルを読み込む為のプロトタイプのメソッドを定義する。
+setSound.prototype.playMusic = function()
+{
+ if( arrayOfURLOfSourceOfAudioFile !== null )
+ // オーディオ ファイルのURLのリストが存在するならば以下の処理を行う。
+ {
+  if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null && instanceOfSetSound.isMusicBeingOutput === true )
+  // 曲の再生中であるならば以下の処理を行う。
+  {
+   // 曲の再生を終了させる。
+   instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( 0 );
+  }
+
+  // AudioBufferSourceNodeを取得する。
+  // これはAudioBufferを再生する時に使うAudioNodeである。
+  instanceOfSetSound.audioBufferSourceNodeOfAudioFile = audioContext.createBufferSource();
+
+
+  // URLが指すオーディオ ファイルを読み込んでAudioBufferを生成する。
+
+  // 再生する楽曲のファイル パスを記憶させる。
+
+  musicTitleCurrentlyPlaying = fileList[musicNumberCurrentlyPlayingInWhole];
+
+  instanceOfAudioInitializer.request.open( 'GET', arrayOfURLOfSourceOfAudioFile[musicNumberCurrentlyPlayingInWhole], true );
+  instanceOfAudioInitializer.request.responseType = 'arraybuffer';
+  instanceOfAudioInitializer.request.send(); // 要求を送り、データを読み込ませる。
+
+
+  // 曲の再生が終了した時の処理を設定する。
+  instanceOfSetSound.audioBufferSourceNodeOfAudioFile.onended = function()
+  {
+   let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+
+   instanceOfSetSound.isMusicBeingOutput = false;
+
+   // 音楽再生ボタンを使用可能にする。
+   document.getElementById( 'buttounToPlayMusic' ).disabled = false;
+
+   if( nextMusicOutput === true )
+   // 次の曲を再生させる予定ならば以下の処理を行う。
+   {
+    if( changeMusicNext === true )
+    // 次の曲を変更する予定ならば以下の処理を行う。
+    {
+     // 次の曲があるならば次の曲を選択状態にする。
+
+     let divElementOfButtonToSelectMusic = null;
+     if( checkboxToHideUnselectedMusic[0].checked === false )
+     // 非選択項目が隠されていないならば以下の処理を行う。
+     {
+      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+     }else
+     // 非選択項目が隠されているならば以下の処理を行う。
+     {
+      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
+     }
+
+     // 楽曲項目の背景色を元に戻す。
+     divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
+
+
+     let nextMusicNumberInWhole = 0;
+     let nextMusicNumberInSelected = 0;
+
+     let checkboxToShuffleMusic = document.getElementsByName( 'checkboxToShuffleMusic' );
+     if( checkboxToShuffleMusic[0].checked === true )
+     // シャッフル有効化のチェックボックスにチェック マークが入っているならば以下の処理を行う。
+     {
+      if( numberOfSelectedFile !== 0 )
+      // 選択されている楽曲数が1つ以上あるならば以下の処理を行う。
+      {
+       do
+       {
+        nextMusicNumberInSelected = Math.floor( Math.random() * numberOfSelectedFile );
+        nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+       }while( nextMusicNumberInWhole === musicNumberCurrentlyPlayingInWhole )
+
+       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
+      }else if( numberOfSelectedFile === 0 )
+      {
+       nextMusicNumberInSelected = musicNumberCurrentlyPlayingInSelected;
+       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+      }
+     }else
+     {
+      if( musicNumberCurrentlyPlayingInSelected !== numberOfSelectedFile - 1 )
+      // 現在の楽曲番号が選択されている楽曲の最大数に達していないならば以下の処理を行う。
+      {
+       musicNumberCurrentlyPlayingInSelected++;
+       nextMusicNumberInSelected = musicNumberCurrentlyPlayingInSelected;
+       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+      }else
+      // 現在の楽曲番号が選択されている楽曲の最大数に達しているならば以下の処理を行う。
+      {
+       nextMusicNumberInSelected = 0;
+       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
+       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+      }
+     }
+
+     musicNumberCurrentlyPlayingInWhole = nextMusicNumberInWhole;
+
+     if( checkboxToHideUnselectedMusic[0].checked === false )
+     // 非選択項目が隠されていないならば以下の処理を行う。
+     {
+      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+     }else
+     // 非選択項目が隠されているならば以下の処理を行う。
+     {
+      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
+     }
+
+     // 次に再生する楽曲項目の背景色を変更する。
+     divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+    }
+
+    changeMusicNext = true;
+
+    // 新たに再生を始める。
+    instanceOfSetSound.playMusic();
+   }else
+   // スペクトラム アナライザーのヴィジュアライザーの描画を停止させる。
+   {
+    instanceOfSpectrumVisualizer.stopTimerForDrawingSpectrum();
+   }
+  }
+ }
+};
+
+// 音楽ファイルの音を再生する為のプロトタイプのメソッドを定義する。
+setSound.prototype.outputMusic = function()
+{
+ this.analyserNodeLeft.fftSize = this.sizeOfFFT;
+ this.analyserNodeRight.fftSize = this.sizeOfFFT;
+ this.analyserNodeLeft.smoothingTimeConstant = this.smoothingTimeConstant;
+ this.analyserNodeRight.smoothingTimeConstant = this.smoothingTimeConstant;
+
+ // AudioBufferSourceNodeをGainNodeに接続する
+ instanceOfSetSound.audioBufferSourceNodeOfAudioFile.connect( this.gainNodeForMusicPlayback );
+
+ // GainNodeをChannelSplitterNodeに接続する。
+ this.gainNodeForMusicPlayback.connect( this.channelSplitterNode );
+
+ // ChannelSplitterNodeをAnalyserNodeに接続する。
+ this.channelSplitterNode.connect( this.analyserNodeLeft, 0 );
+ this.channelSplitterNode.connect( this.analyserNodeRight, 1 );
+
+ // GainNodeを出力先に接続する。
+ this.gainNodeForMusicPlayback.connect( audioContext.destination );
+
+ // ゲインを設定する。
+ // 値は現在値との相対値である。
+ this.gainNodeForMusicPlayback.gain.setValueAtTime( this.musicPlaybackGain, 0 );
+
+ // 音楽の再生を開始する。
+ instanceOfSetSound.isMusicBeingOutput = true;
+ instanceOfSetSound.audioBufferSourceNodeOfAudioFile.start( 0 );
+
+
+ // 画面にスペクトラム アナライザーを表示する。
+ if( instanceOfSpectrumVisualizer === null )
+ {
+  instanceOfSpectrumVisualizer = new spectrumVisualizer();
+ }
+ instanceOfSpectrumVisualizer.startTimerForDrawingSpectrum();
+};
+
+// 音楽ファイルの音の再生を停止する為のプロトタイプのメソッドを定義する。
+setSound.prototype.stopMusic = function()
+{
+ let currentTime = audioContext.currentTime;
+
+ // ゲインを0にする。
+ // 値は現在値との相対値である。
+ // 'setValueAtTime' 等のメソッドで初期値を設定してからでないと 'linearRampToValueAtTime' でゲインを滑らかに変更出来ない。
+ this.gainNodeForMusicPlayback.gain.setValueAtTime( this.musicPlaybackGain, 0 );
+ this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 1 );
+
+ // 音楽の再生を停止する。
+ instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( currentTime + 2 );
+};
+
+
+///////////////////////////////////////////////////////
+
+
+let canvasElement;
+let divElementOfUpperArea;
+let divElementOfUnderArea;
+let divElementOfMusicListArea;
+let canvasContext;
+
+let canvasLayerForBackground;
+let canvasLayerContextForBackground;
+
+let canvasLayerForVisualizerOfSpectrumAnalyser;
+let canvasLayerContextForVisualizerOfSpectrumAnalyser;
+
+let canvasLayerForVisualEffect;
+let canvasLayerContextForVisualEffect;
+
+let canvasLayerForTemporaryUse;
+let canvasLayerContextForTemporaryUse;
+
+let widthOfCanvasContext = 0;
+let heightOfCanvasContext = 0;
+
+// Canvasを初期化するコンストラクターを関数式により定義する。
+/** @constructor */ 
+let initializeCanvas = function()
+{
+ // Canvas要素を取得し、変数に格納して置く。
+ canvasElement = document.getElementById( 'canvas1' );
+
+ canvasElement.width = Math.min(
+  document.documentElement.clientWidth, document.getElementById( 'areaOfcanvas1' ).clientWidth,
+  document.documentElement.clientHeight * 0.82 );
+ canvasElement.height = canvasElement.width;
+
+ // div要素を取得し、変数に格納して置く。
+ divElementOfUpperArea = document.getElementById( 'displayAreaOfMusicTitle1' );
+
+ // div要素を取得し、変数に格納して置く。
+ divElementOfUnderArea = document.getElementById( 'areaOfButton1' );
+
+ let padding = 1;
+ divElementOfUpperArea.style.width = canvasElement.width - padding * 2 + 'px';
+ divElementOfUnderArea.style.width = canvasElement.width - padding * 2 + 'px';
+
+ divElementOfMusicListArea = document.getElementById( 'musicListArea1_3' ); // div要素を取得し、変数に格納して置く。
+ divElementOfMusicListArea.style['max-height'] = document.documentElement.clientHeight + 'px';
+
+
+ // 実際に画面上に表示されるCanvas要素のコンテキストを作成する。
+ canvasContext = document.getElementById( 'canvas1' ).getContext( '2d' );
+
+ // アクセスの高速化の為に変数にCanvasの寸法を代入して置く。
+ widthOfCanvasContext = canvasContext.canvas.width;
+ heightOfCanvasContext = canvasContext.canvas.height;
+
+ // オフスクリーン描画用のCanvas要素のコンテキストを作成する。
+
+ canvasLayerForBackground = document.createElement( 'canvas' );
+ canvasLayerForBackground.width = widthOfCanvasContext;
+ canvasLayerForBackground.height = heightOfCanvasContext;
+ canvasLayerContextForBackground = canvasLayerForBackground.getContext( '2d' );
+
+ canvasLayerForVisualizerOfSpectrumAnalyser = document.createElement( 'canvas' );
+ canvasLayerForVisualizerOfSpectrumAnalyser.width = widthOfCanvasContext;
+ canvasLayerForVisualizerOfSpectrumAnalyser.height = heightOfCanvasContext;
+ canvasLayerContextForVisualizerOfSpectrumAnalyser = canvasLayerForVisualizerOfSpectrumAnalyser.getContext( '2d' );
+
+ canvasLayerForVisualEffect = document.createElement( 'canvas' );
+ canvasLayerForVisualEffect.width = widthOfCanvasContext;
+ canvasLayerForVisualEffect.height = heightOfCanvasContext;
+ canvasLayerContextForVisualEffect = canvasLayerForVisualEffect.getContext( '2d' );
+
+ canvasLayerForTemporaryUse = document.createElement( 'canvas' );
+ canvasLayerForTemporaryUse.width = widthOfCanvasContext;
+ canvasLayerForTemporaryUse.height = heightOfCanvasContext;
+ canvasLayerContextForTemporaryUse = canvasLayerForTemporaryUse.getContext( '2d' );
+ canvasLayerContextForTemporaryUse.globalCompositeOperation = 'lighter';
+
+ this.drawToInitializeCanvas(); // 最初の描画を行う。
+};
+
+// 画面を塗り潰す為のプロトタイプのメソッドを定義する。
+initializeCanvas.prototype.drawToInitializeCanvas = function()
+{
+ // 実際に画面上に表示されるCanvas要素のコンテキストに対して塗り潰しを行う。
+ canvasContext.fillStyle = 'rgba( 64, 64, 64, 1 )';
+ canvasContext.fillRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext );
+};
+
+let instanceOfInitializeCanvas = new initializeCanvas();
+
+
+///////////////////////////////////////////////////////
+
+
+// ポインターの座標を格納する為のオブジェクトを作成する。
+let pointerCoordinate =
+{
+ clientX: 0,
+ clientY: 0,
+ mouseDownX: 0,
+ mouseDownY: 0,
+ coordinateInCanvasX: 0,
+ coordinateInCanvasY: 0,
+ mouseDownHeightInCanvas: 0,
+ mouseDownXOverCanvasWidth: 0,
+ mouseDownYOverCanvasHeight: 0,
+ mouseDownHeightOverCanvasHeight: 0,
+ isPointerInCanvasArea: false
+};
+
+// ポインターの座標を取得する為の関数を実行する為のタイマーを始動するコンストラクターを関数式により定義する。
+/** @constructor */ 
+let startTimerToGetPositionOfPointer = function()
+{
+ this.timer = null;
+ let thisStartTimerToGetPositionOfPointer = this;
+ this.timer = setInterval( function(){document.onmousemove = thisStartTimerToGetPositionOfPointer.getPositionOfPointer;}, 20 );
+};
+
+startTimerToGetPositionOfPointer.prototype.getPositionOfPointer = function( event )
+{
+ pointerCoordinate.clientX = event.clientX + window.pageXOffset;
+ pointerCoordinate.clientY = event.clientY + window.pageYOffset;
+ if( pointerCoordinate.clientX >= canvasContext.canvas.offsetLeft && pointerCoordinate.clientX <= canvasContext.canvas.offsetLeft + widthOfCanvasContext )
+ {
+  if( pointerCoordinate.clientY >= canvasContext.canvas.offsetTop && pointerCoordinate.clientY <= canvasContext.canvas.offsetTop + heightOfCanvasContext )
+  {
+   pointerCoordinate.isPointerInCanvasArea = true;
+   pointerCoordinate.coordinateInCanvasX = pointerCoordinate.clientX - canvasContext.canvas.offsetLeft;
+   pointerCoordinate.coordinateInCanvasY = pointerCoordinate.clientY - canvasContext.canvas.offsetTop;
+  }else
+  {
+   pointerCoordinate.isPointerInCanvasArea = false;
+  }
+ }else
+ {
+  pointerCoordinate.isPointerInCanvasArea = false;
+ }
+};
+
+// タイマーを停止させる為のプロトタイプのメソッドを定義する。
+startTimerToGetPositionOfPointer.prototype.stopTimerToGetPositionOfPointer = function()
+{
+ clearInterval( this.timer );
+ this.timer = null;
+};
+
+
+///////////////////////////////////////////////////////
+
+
+let canvasLayerForDrawingParticleInAdvance = [];
+let canvasLayerContextForDrawingParticleInAdvance = [];
+
+// Canvasに関するコンストラクターを関数式により定義する。
+/** @constructor */ 
+let interactiveCanvas = function()
+{
+ // プロパティーを定義して固有の値を格納する。
+ this.timerForBackgroundColoring = null;
+
+ this.timerForTracePointer = null;
+ this.timerForProcessingMouseDownEffect = null;
+ this.variableForFunctionOfProcessingMouseDownEvent = null;
+ this.variableForFunctionOfProcessingMouseUpEvent = null;
+ this.variableForFunctionOfProcessingKeyDownEvent = null;
+ this.variableForFunctionOfProcessingKeyUpEvent = null;
+ this.variableForFunctionOfProcessingLusingWindowFocusEvent = null;
+ this.variableForFunctionOfProcessingVisibilityChangeEvent = null;
+
+ this.canvasLayerForDrawingPointer = null;
+ this.canvasLayerContextForDrawingPointer = null;
+ this.pointerCircleSize = 20
+
+ this.coordinateX = widthOfCanvasContext * Math.random();
+ this.coordinateY = heightOfCanvasContext * Math.random();
+ this.hueOfBackground = 0; // 色相を初期化する。
+ this.defaultOfSaturationOfBackground = 100; // 彩度の初期値。
+ this.defaultOfLightnessOfBackground = 1; // 輝度の初期値。
+ this.saturationOfBackground = this.defaultOfSaturationOfBackground; // 彩度を初期化する。
+ this.lightnessOfBackground = this.defaultOfLightnessOfBackground; // 輝度を初期化する。
+
+ this.clearInteractiveCanvas(); // 画面を初期化する。
+ this.addMouseDownHandler(); // マウス ボタンを押下する際のイヴェントを扱う関数を設定する関数を呼び出す。
+ this.addMouseUpHandler(); // マウス ボタンを解放する際のイヴェントを扱う関数を設定する関数を呼び出す。
+ this.addKeyDownHandler(); // キーを押下する際のイヴェントを扱う関数を設定する関数を呼び出す。
+ this.addKeyUpHandler(); // キーを開放する際のイヴェントを扱う関数を設定する関数を呼び出す。
+ this.addLusingWindowFocusHandler(); // ウィンドウがフォーカスを失った際のイヴェントを扱う関数を設定する関数を呼び出す。
+ this.startBackgroundColoringTimer();
+ this.startTimerToGetPositionOfPointer = new startTimerToGetPositionOfPointer();
+ this.startPointerTraceTimer();
+
+
+
+ this.numberOfTimerForProcessingVisualEffect = 32;
+ this.timerForProcessingVisualEffect = [];
+ this.countOfTimerForProcessingVisualEffect = 0;
+ this.timerToStopProcessingVisualEffect = [];
+ this.countOfTimerToStopProcessingVisualEffect = 0;
+
+ this.numberOfLightParticle = 256;
+ this.numberOfLightLine = 32;
+
+
+ this.lightParticleMaximumHalfSize = 16;
+ this.lightParticleMinimumHalfSize = 4;
+ this.lightLineMaximumLength = 256;
+ this.lightLineMinimumLength = 32;
+
+ this.coordinateOfWaveletCircleX = [];
+ this.coordinateOfWaveletCircleY = [];
+ this.growthRateOfWaveletCircle = [];
+ this.sizeOfWaveletCircle = [];
+ this.waveletCircleAlpha = [];
+ this.waveletCircleLightness = [];
+
+ this.waveRingAlpha = [];
+ this.waveLightBallLightness = [];
+ this.waveLightBallAlpha = [];
+
+ let i = 0;
+ for( i = 0; i < this.numberOfTimerForProcessingVisualEffect; i++ )
+ {
+  lightParticleSize[i] = [];
+  lightParticleCoordinateX[i] = [];
+  lightParticleCoordinateY[i] = [];
+  lightParticleMovementAmountX[i] = [];
+  lightParticleMovementAmountY[i] = [];
+  lightParticleChangeAmountOfMovementAmountX[i] = [];
+  lightParticleChangeAmountOfMovementAmountY[i] = [];
+
+  lightLineLength[i] = [];
+  lightLineCoordinateX[i] = [];
+  lightLineCoordinateY[i] = [];
+  lightLineMovementAmountX[i] = [];
+  lightLineMovementAmountY[i] = [];
+
+  // タイマーを初期化する。
+  this.timerForProcessingVisualEffect[i] = null;
+  this.timerToStopProcessingVisualEffect[i] = null;
+
+  // 粒子描画用のCanvas要素のコンテキストを作成する。
+  canvasLayerForDrawingParticleInAdvance[i] = document.createElement( 'canvas' );
+  canvasLayerForDrawingParticleInAdvance[i].width = this.lightParticleMaximumHalfSize * 2;
+  canvasLayerForDrawingParticleInAdvance[i].height = this.lightParticleMaximumHalfSize * 2;
+  canvasLayerContextForDrawingParticleInAdvance[i] = canvasLayerForDrawingParticleInAdvance[i].getContext( '2d' );
+ }
+
+ // 視覚効果の描画を行う関数のタイマーを始動させる。
+ let thisInteractiveCanvas = this;
+ this.timerForDrawingVisualEffect = setInterval( function(){thisInteractiveCanvas.drawVisualEffect();}, 25 );
+};
+
+// 画面を表示する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.displayCanvas = function()
+{
+ let i = 0;
+ let isSpectrumVisualizerEmpty = true;
+ let isVisualEffectEmpty = true;
+
+
+ // 実際に画面上に表示されるCanvas要素のコンテキストに対してオフスクリーン描画用のCanvas要素の内容を転写する。
+
+
+ canvasContext.drawImage( canvasLayerForBackground, 0, 0 ); // 背景を描画する。
+
+ // 稼働中のスペクトラム アナライザーの描画用タイマーがあるかどうかを調べる。
+ if( instanceOfSpectrumVisualizer !== null )
+ {
+  if( instanceOfSpectrumVisualizer.timerForDrawingSpectrum !== null )
+  {
+   isSpectrumVisualizerEmpty = false;
+  }
+ }
+
+ // 稼働中の視覚効果の処理用タイマーがあるかどうかを調べる。
+ for( i = 0; i < instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect; i++ )
+ {
+  if( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[i] !== null )
+  {
+   isVisualEffectEmpty = false;
+   break;
+  }
+ }
+
+ if( isSpectrumVisualizerEmpty === false && isVisualEffectEmpty === false )
+ {
+   canvasLayerContextForTemporaryUse.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext ); // Canvas レイヤーのコンテキストの内容を消去する。
+   canvasLayerContextForTemporaryUse.drawImage( canvasLayerForVisualizerOfSpectrumAnalyser, 0, 0 ); // スペクトラム アナライザーを描画する。
+   canvasLayerContextForTemporaryUse.drawImage( canvasLayerForVisualEffect, 0, 0 ); // 視覚効果を描画する。
+   canvasContext.drawImage( canvasLayerForTemporaryUse, 0, 0 ); // 実際に画面上に表示されるCanvas要素のコンテキストに対してオフスクリーン描画用のCanvas要素の内容を転写する。
+ }else if( isSpectrumVisualizerEmpty === false && isVisualEffectEmpty === true )
+ {
+   canvasContext.drawImage( canvasLayerForVisualizerOfSpectrumAnalyser, 0, 0 ); // スペクトラム アナライザーを描画する。
+ }else if( isSpectrumVisualizerEmpty === true && isVisualEffectEmpty === false )
+ {
+   canvasContext.drawImage( canvasLayerForVisualEffect, 0, 0 ); // 視覚効果を描画する。
+ }
+};
+
+// マウス ボタンを押下した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.addMouseDownHandler = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfProcessingMouseDownEvent = function(){thisInteractiveCanvas.processMouseDownEvent();};
+ canvas1.addEventListener( 'mousedown', this.variableForFunctionOfProcessingMouseDownEvent, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// マウス ボタンを解放した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.addMouseUpHandler = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfProcessingMouseUpEvent = function(){thisInteractiveCanvas.processMouseUpEvent();};
+ document.addEventListener( 'mouseup', this.variableForFunctionOfProcessingMouseUpEvent, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// キーボードのキーを押下した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.addKeyDownHandler = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfProcessingKeyDownEvent = function( event ){thisInteractiveCanvas.processKeyDownEvent( event );};
+ document.addEventListener( 'keydown', this.variableForFunctionOfProcessingKeyDownEvent, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// キーボードのキーを解放した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.addKeyUpHandler = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfProcessingKeyUpEvent = function( event ){thisInteractiveCanvas.processKeyUpEvent( event );};
+ document.addEventListener( 'keyup', this.variableForFunctionOfProcessingKeyUpEvent, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// ウィンドウがフォーカスを失った際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.addLusingWindowFocusHandler = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfProcessingLusingWindowFocusEvent = function(){thisInteractiveCanvas.processLusingWindowFocusEvent();};
+ window.addEventListener( 'blur', this.variableForFunctionOfProcessingLusingWindowFocusEvent, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+ // 結果として第3引数をtrueにするとウィンドウ内の他の要素をクリックしただけで処理が開始されてしまうので、第3引数はfalseとして置く。
+};
+
+// ウィンドウがフォーカスを失った際の処理を行う為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processLusingWindowFocusEvent = function()
+{
+ // 全ての音の再生のループを終了する。
+ instanceOfSetSound.isLoopOn = false;
+ let arrayOfKeyOfTriggerForSoundOutput = Object.keys( triggerForSoundOutput.isPushingDown );
+ let keyOfTriggerForSoundOutput = null;
+ let i = 0;
+ for( i = 0; i < arrayOfKeyOfTriggerForSoundOutput.length; i++ )
+ {
+  keyOfTriggerForSoundOutput = arrayOfKeyOfTriggerForSoundOutput[i];
+  triggerForSoundOutput.isPushingDown[keyOfTriggerForSoundOutput] = false;
+  if( triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput] !== null )
+  // キーのソースが存在するならば以下の処理を行う。
+  {
+   // AudioBufferSourceNodeのループ再生の設定をオフにして音の再生のループを終了させる。
+   triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].loop = false;
+  }
+ }
+};
+
+// マウス ボタンを押下した際の処理を行う為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processMouseDownEvent = function()
+{
+ pointerCoordinate.mouseDownX = pointerCoordinate.coordinateInCanvasX;
+ pointerCoordinate.mouseDownY = pointerCoordinate.coordinateInCanvasY;
+ pointerCoordinate.mouseDownHeightInCanvas = heightOfCanvasContext - pointerCoordinate.mouseDownY;
+ pointerCoordinate.mouseDownXOverCanvasWidth = pointerCoordinate.coordinateInCanvasX / widthOfCanvasContext;
+ pointerCoordinate.mouseDownYOverCanvasHeight = pointerCoordinate.coordinateInCanvasY / heightOfCanvasContext;
+ pointerCoordinate.mouseDownHeightOverCanvasHeight = pointerCoordinate.mouseDownHeightInCanvas / heightOfCanvasContext;
+
+ // 音の種類を選択する為のラジオ ボタンの内、どのラジオ ボタンが押されているかを調べる。
+ let listOfRadioButton = document.getElementsByName( 'radioButtonOfTypeOfSound' );
+ let i = 0;
+ for( i = 0; i < listOfRadioButton.length; i++ )
+ {
+  if( listOfRadioButton[i].checked )
+  {
+   instanceOfSetSound.typeOfSound = listOfRadioButton[i].value;
+   break;
+  }
+ }
+
+ let keyOfTriggerForSoundOutput = 'mouseButton';
+ triggerForSoundOutput.isPushingDown[keyOfTriggerForSoundOutput] = true;
+
+ // 音を再生させる。
+ let playingMode = 'MouseDownOrTap';
+ instanceOfSetSound.playSound( playingMode, keyOfTriggerForSoundOutput );
+ 
+ // 視覚効果の開始の処理を行う関数を呼び出す。
+ instanceOfInteractiveCanvas.processStartOfVisualEffect( playingMode );
+};
+
+// マウス ボタンを解放した際の処理を行う為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processMouseUpEvent = function()
+{
+ let keyOfTriggerForSoundOutput = 'mouseButton';
+ triggerForSoundOutput.isPushingDown[keyOfTriggerForSoundOutput] = false;
+
+
+ // AudioBufferSourceNodeのループ再生の設定をオフにして音の再生のループを終了させる。
+
+ instanceOfSetSound.isLoopOn = false;
+
+ keyOfTriggerForSoundOutput = 'mouseButton';
+ if( triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput] !== null )
+ // キーのソースが存在するならば以下の処理を行う。
+ {
+  triggerForSoundOutput.audioBufferSourceNode[keyOfTriggerForSoundOutput].loop = false;
+ }
+};
+
+// キーボードのキーを押下した際の処理を行う為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processKeyDownEvent = function( event )
+{
+ // 音の種類を選択する為のラジオ ボタンの内、どのラジオ ボタンが押されているかを調べる。
+ let listOfRadioButton = document.getElementsByName( 'radioButtonOfTypeOfSound' );
+ let i = 0;
+ for( i = 0; i < listOfRadioButton.length; i++ )
+ {
+  if( listOfRadioButton[i].checked )
+  {
+   instanceOfSetSound.typeOfSound = listOfRadioButton[i].value;
+   break;
+  }
+ }
+
+ let code = event.code;
+ let isShiftKeyPushedDown = event.shiftKey;
+ let keyOfTriggerForSoundOutput = code;
+
+ // 音の再生と画面描画の為の関数を関数式により定義する。
+ let playSoundAndProcessStartOfVisualEffect = function()
+ {
+  // 音を再生させる。
+  let playingMode = 'Keyboard';
+  instanceOfSetSound.playSound( playingMode, keyOfTriggerForSoundOutput );
+
+  // 視覚効果の開始の処理を行う関数を呼び出す。
+  instanceOfInteractiveCanvas.processStartOfVisualEffect( playingMode );
+ };
+
+ // オクターヴ番号を選択する為のラジオ ボタンの内、どのラジオ ボタンが押されているかを調べる。
+ let listOfRadioButtonToSelectOctave = document.getElementsByName( 'radioButtonOfOctaveNumber' );
+ let octaveNumber = 5;
+ let octaveShiftUp = 0;
+ let octaveShiftDown = 0;
+ for( i = 0; i < listOfRadioButtonToSelectOctave.length; i++ )
+ {
+  if( listOfRadioButtonToSelectOctave[i].checked )
+  {
+   octaveNumber = + listOfRadioButtonToSelectOctave[i].value;
+   break;
+  }
+ }
+
+ if( octaveNumber === 0 )
+ {
+  octaveNumberPlus1 = octaveNumber + 1;
+  octaveNumberPlus2 = octaveNumber + 2;
+  if( isShiftKeyPushedDown )
+  // Shift キーが押下されているならば、以下の処理を行う。
+  {
+   octaveShiftDown = 0;
+   octaveShiftUp = 1;
+  }
+ }else if( octaveNumber >= 1 && octaveNumber <= 6 )
+ {
+  octaveNumberPlus1 = octaveNumber + 1;
+  octaveNumberPlus2 = octaveNumber + 2;
+  if( isShiftKeyPushedDown )
+  // Shift キーが押下されているならば、以下の処理を行う。
+  {
+   octaveShiftDown = - 1;
+   octaveShiftUp = 1;
+  }
+ }else if( octaveNumber === 7 )
+ {
+  octaveNumberPlus1 = octaveNumber + 1;
+  if( isShiftKeyPushedDown )
+  // Shift キーが押下されているならば、以下の処理を行う。
+  {
+   octaveShiftDown = - 1;
+   octaveShiftUp = 1;
+   octaveNumberPlus2 = octaveNumber + 1;
+  }else
+  // Shift キーが押下されていないならば、以下の処理を行う。
+  {
+   octaveNumberPlus2 = octaveNumber + 2;
+  }
+ }else if( octaveNumber === 8 )
+ {
+  octaveNumberPlus1 = octaveNumber + 1;
+  octaveNumberPlus2 = octaveNumber + 1;
+  if( isShiftKeyPushedDown )
+  // Shift キーが押下されているならば、以下の処理を行う。
+  {
+   octaveShiftDown = - 1;
+   octaveShiftUp = 0;
+  }
+ }else if( octaveNumber === 9 )
+ {
+  octaveNumberPlus1 = octaveNumber;
+  octaveNumberPlus2 = octaveNumber;
+  if( isShiftKeyPushedDown )
+  // Shift キーが押下されているならば、以下の処理を行う。
+  {
+   octaveShiftDown = - 1;
+   octaveShiftUp = 0;
+  }
+ }
+
+
+ // キーボードの押されたキーに応じた音を設定する。
+ let isButtonPushed = false;
+ switch( code )
+ {
+  case 'KeyZ':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['c'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyS':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['cs'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyX':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['d'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyD':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['ds'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyC':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['e'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyV':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['f'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyG':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['fs'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyB':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['g'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyH':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['gs'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyN':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['a'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyJ':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['as'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'KeyM':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['b'][octaveNumber + octaveShiftDown];
+   }
+   break;
+
+  case 'Comma':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['c'][octaveNumberPlus1 + octaveShiftDown];
+   }
+   break;
+
+
+  case 'KeyQ':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['c'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'Digit2':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['cs'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyW':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['d'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'Digit3':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['ds'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyE':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['e'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyR':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['f'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'Digit5':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['fs'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyT':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['g'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'Digit6':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['gs'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyY':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['a'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'Digit7':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['as'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyU':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['b'][octaveNumberPlus1 + octaveShiftUp];
+   }
+   break;
+
+  case 'KeyI':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['c'][octaveNumberPlus2 + octaveShiftUp];
+   }
+   break;
+
+  case 'Digit1':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['g'][1];
+   }
+   break;
+
+  case 'Digit9':
+   if( !triggerForSoundOutput.isPushingDown[code] )
+   {
+    isButtonPushed = true;
+    instanceOfSetSound.frequency = instanceOfSetSound.soundList['g'][1];
+   }
+   break;
+
+  default:
+   break;
+ }
+
+ if( isButtonPushed === true )
+ {
+  triggerForSoundOutput.isPushingDown[code] = true;
+  playSoundAndProcessStartOfVisualEffect();
+ }
+};
+
+// キーボードのキーを解放した際の処理を行う為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processKeyUpEvent = function( event )
+{
+ let code = event.code;
+
+ // AudioBufferSourceNodeのループ再生の設定をオフにして音の再生のループを終了させる。
+ if( ['KeyZ', 'KeyS', 'KeyX', 'KeyD', 'KeyC', 'KeyV', 'KeyG', 'KeyB', 'KeyH', 'KeyN', 'KeyJ', 'KeyM', 'Comma',
+  'KeyQ', 'Digit2', 'KeyW', 'Digit3', 'KeyE', 'KeyR', 'Digit5', 'KeyT', 'Digit6', 'KeyY', 'Digit7', 'KeyU', 'KeyI', 'Digit1', 'Digit9'].includes( code ) )
+ {
+  if( triggerForSoundOutput.isPushingDown[code] )
+  {
+   triggerForSoundOutput.isPushingDown[code] = false;
+   instanceOfSetSound.isLoopOn = false;
+   triggerForSoundOutput.audioBufferSourceNode[code].loop = false;
+  }
+ }
+};
+
+// 画面を徐々に消して行く為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.colorBackground = function()
+{
+ instanceOfInteractiveCanvas.hueOfBackground += Math.random() * 3; // 色相に僅かな揺らぎのある変化を与える。
+ if( instanceOfInteractiveCanvas.hueOfBackground > 360 )
+ {
+  instanceOfInteractiveCanvas.hueOfBackground -= 360;
+ }
+ canvasLayerContextForBackground.save(); // 描画設定を保存する。
+ canvasLayerContextForBackground.fillStyle =
+  'hsla( ' + instanceOfInteractiveCanvas.hueOfBackground + ', ' + instanceOfInteractiveCanvas.saturationOfBackground + '%, ' + instanceOfInteractiveCanvas.lightnessOfBackground + '%, 0.2 )';
+ canvasLayerContextForBackground.fillRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext );
+ canvasLayerContextForBackground.restore(); // 描画の設定を元に戻す。
+};
+
+// 背景の色を初期化する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.resetBackgroundColor = function()
+{
+ instanceOfInteractiveCanvas.saturationOfBackground = instanceOfInteractiveCanvas.defaultOfSaturationOfBackground; // 彩度を初期化する。
+ instanceOfInteractiveCanvas.lightnessOfBackground = instanceOfInteractiveCanvas.defaultOfLightnessOfBackground; // 輝度を初期化する。
+};
+
+// 背景の色を変化させて行く関数のタイマーを始動するプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.startBackgroundColoringTimer = function()
+{
+ let thisInteractiveCanvas = this;
+ if( this.timerForBackgroundColoring === null )
+ // もし背景の色を変化させて行く関数のタイマーが稼働中でなければ以下の処理を行う。
+ {
+  this.timerForBackgroundColoring = setInterval( function(){thisInteractiveCanvas.colorBackground();}, 100 ); // タイマーによるインターヴァル動作で背景の色を変化させて行く関数を実行する。
+ }
+};
+
+// マウス ボタン押下した際の処理を行う関数のタイマーを停止させるプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.stopProcessingMouseDownEventTimer = function()
+{
+ clearInterval( instanceOfInteractiveCanvas.timerForProcessingMouseDownEffect ); // タイマーを停止させる。
+ instanceOfInteractiveCanvas.timerForProcessingMouseDownEffect = null;
+};
+
+// インタラクティヴ キャンヴァスで動作中の全てのタイマーを停止させるプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.stopAllOfInteractiveCanvasTimer = function()
+{
+ // イヴェント ハンドラーを除去する。
+ canvas1.removeEventListener( 'mousedown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseDownEvent, false );
+ document.removeEventListener( 'mouseup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseUpEvent, false );
+ document.removeEventListener( 'keydown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingKeyDownEvent, false );
+ document.removeEventListener( 'keyup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingKeyUpEvent, false );
+ window.removeEventListener( 'blur', instanceOfInteractiveCanvas.variableForFunctionOfProcessingLusingWindowFocusEvent, false );
+
+ instanceOfInteractiveCanvas.stopAllOfDrawingVisualEffectTimer(); // 視覚効果の描画用の全てのタイマーを停止させる。
+
+ if( instanceOfInteractiveCanvas.timerForBackgroundColoring !== null )
+ {
+  clearInterval( instanceOfInteractiveCanvas.timerForBackgroundColoring );
+  instanceOfInteractiveCanvas.timerForBackgroundColoring = null;
+ }
+
+ if( instanceOfInteractiveCanvas.timerForTracePointer !== null )
+ {
+  clearInterval( instanceOfInteractiveCanvas.timerForTracePointer );
+  instanceOfInteractiveCanvas.timerForTracePointer = null;
+ }
+
+ if( instanceOfInteractiveCanvas.timerForProcessingMouseDownEffect !== null )
+ {
+  clearInterval( instanceOfInteractiveCanvas.timerForProcessingMouseDownEffect );
+  instanceOfInteractiveCanvas.timerForProcessingMouseDownEffect = null;
+ }
+
+ instanceOfInteractiveCanvas.clearInteractiveCanvas(); // 画面を初期化する。
+};
+
+// 視覚効果の処理と描画用の動作中のタイマーを停止させるプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.stopAllOfDrawingVisualEffectTimer = function()
+{
+ // 視覚効果の処理用のタイマー停止用の全てのタイマーを停止させる。
+ instanceOfInteractiveCanvas.stopAllOfStopTimerForProcessingVisualEffect();
+
+ // 全ての視覚効果の処理用タイマーを停止させる。
+ instanceOfInteractiveCanvas.stopAllOfTimerForProcessingVisualEffect();
+
+ // 視覚効果の描画を止める。
+ clearInterval( instanceOfInteractiveCanvas.timerForDrawingVisualEffect );
+ instanceOfInteractiveCanvas.timerForDrawingVisualEffect = null;
+};
+
+// ポインターの軌跡を取得する為のタイマーを始動させるプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.startPointerTraceTimer = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // ポインターの軌跡の描画用のCanvas要素のコンテキストを作成する。
+ this.canvasLayerForDrawingPointer = document.createElement( 'canvas' );
+ this.canvasLayerForDrawingPointer.width = this.pointerCircleSize * 2;
+ this.canvasLayerForDrawingPointer.height = this.pointerCircleSize * 2;
+ this.canvasLayerContextForDrawingPointer = this.canvasLayerForDrawingPointer.getContext( '2d' );
+
+ this.canvasLayerContextForDrawingPointer.save(); // 描画設定を保存する。
+ this.canvasLayerContextForDrawingPointer.beginPath();
+
+ // 予めポインターの円を別のレイヤーに描画して置く。
+
+ // 円形の色勾配を設定する。
+ let radialGradientForPointerCircle = this.canvasLayerContextForDrawingPointer.createRadialGradient(
+  this.pointerCircleSize, // 中心のx座標。
+  this.pointerCircleSize, // 中心のy座標。
+  0,
+  this.pointerCircleSize, // 中心のx座標。
+  this.pointerCircleSize, // 中心のy座標。
+  this.pointerCircleSize // 半径。
+ );
+
+ radialGradientForPointerCircle.addColorStop( 0.0, 'hsla( 0, 0%, 100%, 1.00 )' ); // 開始円の色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.1, 'hsla( 0, 0%, 100%, 1.00 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.2, 'hsla( 0, 0%, 100%, 0.50 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.3, 'hsla( 0, 0%, 100%, 0.20 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.4, 'hsla( 0, 0%, 100%, 0.14 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.5, 'hsla( 0, 0%, 100%, 0.10 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.6, 'hsla( 0, 0%, 100%, 0.08 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.7, 'hsla( 0, 0%, 100%, 0.06 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.8, 'hsla( 0, 0%, 100%, 0.04 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 0.9, 'hsla( 0, 0%, 100%, 0.02 )' ); // 中間点の位置と色を設定する。
+ radialGradientForPointerCircle.addColorStop( 1.0, 'hsla( 0, 0%, 100%, 0.00 )' ); // 終了点の色を設定する。
+
+ this.canvasLayerContextForDrawingPointer.save(); // 描画設定を保存する。
+ this.canvasLayerContextForDrawingPointer.clearRect(
+  0, 0,
+  this.canvasLayerContextForDrawingPointer.canvas.width,
+  this.canvasLayerContextForDrawingPointer.canvas.height ); // 元のCanvas レイヤーの内容を消去する。
+
+ // 指定の色勾配で円弧を描画するように設定する。
+ this.canvasLayerContextForDrawingPointer.beginPath(); // サブパスの作成を開始する。
+ this.canvasLayerContextForDrawingPointer.arc(
+  this.pointerCircleSize, // 中心のx座標。
+  this.pointerCircleSize, // 中心のy座標。
+  this.pointerCircleSize, // 半径。
+  0, // 開始角度。
+  2 * Math.PI, // 終了角度。
+  false );
+
+ this.canvasLayerContextForDrawingPointer.fillStyle = radialGradientForPointerCircle; // 塗り潰し色を代入する。
+ this.canvasLayerContextForDrawingPointer.fill(); // パスの塗り潰しを実行する。
+ this.canvasLayerContextForDrawingPointer.restore(); // 描画の設定を元に戻す。
+
+ // ポインターの座標を取得して処理を行う関数をタイマーによるインターヴァル動作で実行する。
+ this.timerForTracePointer = setInterval( function(){thisInteractiveCanvas.tracePointer();}, 20 );
+};
+
+// ポインターの軌跡を描く為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.tracePointer = function()
+{
+ if( pointerCoordinate.isPointerInCanvasArea )
+ {
+  canvasLayerContextForBackground.beginPath();
+
+  // 別のレイヤーに予め描画しておいたポインターの円の画像を適切な座標に適切な大きさで複写する。
+  canvasLayerContextForBackground.drawImage(
+  instanceOfInteractiveCanvas.canvasLayerForDrawingPointer, // 複写元の画像。
+  pointerCoordinate.coordinateInCanvasX - instanceOfInteractiveCanvas.pointerCircleSize, // 複写先の領域のx座標。
+  pointerCoordinate.coordinateInCanvasY - instanceOfInteractiveCanvas.pointerCircleSize ); // 複写先の領域のy座標。
+ }
+ instanceOfInteractiveCanvas.displayCanvas(); // 画面を表示させる。
+};
+
+// 画面を初期化する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.clearInteractiveCanvas = function()
+{
+ canvasLayerContextForBackground.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext );
+ canvasLayerContextForVisualEffect.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext );
+ canvasLayerContextForVisualizerOfSpectrumAnalyser.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext );
+
+ instanceOfInitializeCanvas.drawToInitializeCanvas();
+};
+
+// 視覚効果の開始の処理を行う為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processStartOfVisualEffect = function( playingMode )
+{
+ let thisInteractiveCanvas = this;
+
+ if( playingMode === 'MouseDownOrTap' )
+ // クリックまたはタップによる入力を受け付けるモードが選択されている場合には以下の処理を行う。
+ {
+  instanceOfInteractiveCanvas.coordinateX = pointerCoordinate.mouseDownX;
+  instanceOfInteractiveCanvas.coordinateY = pointerCoordinate.mouseDownY;
+ }else
+ {
+  // 位置座標の確率分布を正規分布に近くして両側1/6ずつを切り捨てる。
+  let randomNumberX = 0;
+  do
+  {
+   randomNumberX = Math.random() + Math.random() + Math.random();
+  }while( randomNumberX < 0.5 || randomNumberX >= 2.5 )
+
+  let randomNumberY = 0;
+  do
+  {
+   randomNumberY = Math.random() + Math.random() + Math.random();
+  }while( randomNumberY < 0.5 || randomNumberY >= 2.5 )
+
+  randomNumberX = (randomNumberX - 0.5) / 2;
+  randomNumberY = (randomNumberY - 0.5) / 2;
+
+  instanceOfInteractiveCanvas.coordinateX = widthOfCanvasContext * randomNumberX;
+  instanceOfInteractiveCanvas.coordinateY = heightOfCanvasContext * randomNumberY;
+ }
+
+ // 視覚効果の処理を開始する。
+ instanceOfInteractiveCanvas.startTimerForProcessingVisualEffect();
+};
+
+// 視覚効果の処理を開始する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.startTimerForProcessingVisualEffect = function()
+{
+ let thisInteractiveCanvas = this;
+
+ // もし次の、視覚効果の処理用タイマーの停止用タイマーが稼働中ならばそれを停止させる。
+ if( instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect] !== null )
+ {
+  clearTimeout( instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect] );
+  instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect] = null;
+ }
+
+ // もし次の、視覚効果の処理用タイマーが稼働中ならばそれを使用した描画を終了させる。
+ if( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[instanceOfInteractiveCanvas.countOfTimerForProcessingVisualEffect] !== null )
+ {
+  instanceOfInteractiveCanvas.stopTimerForProcessingVisualEffect( instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect );
+ }
+
+ let countOfTimerForProcessingVisualEffect = instanceOfInteractiveCanvas.countOfTimerForProcessingVisualEffect; // プリミティヴな値を代入して関数に値渡しが出来るようにする。
+
+
+ canvasLayerContextForVisualEffect.globalCompositeOperation = 'lighter';
+
+
+ // 光る粒子の視覚効果の描画に関する値を初期化する。
+
+ lightParticleAlpha[countOfTimerForProcessingVisualEffect] = 0.98;
+ lightParticleHue[countOfTimerForProcessingVisualEffect] = instanceOfInteractiveCanvas.hueOfBackground - 180 + Math.random() * 20 - 10;
+ if( lightParticleHue[countOfTimerForProcessingVisualEffect] < 0 )
+ {
+  lightParticleHue[countOfTimerForProcessingVisualEffect] += 360;
+ }
+ let coordinateX = instanceOfInteractiveCanvas.coordinateX;
+ let coordinateY = instanceOfInteractiveCanvas.coordinateY;
+ let numberOfLightParticle = instanceOfInteractiveCanvas.numberOfLightParticle;
+ let rangeOfSizeOfLightParticle = instanceOfInteractiveCanvas.lightParticleMaximumHalfSize - instanceOfInteractiveCanvas.lightParticleMinimumHalfSize;
+ let lightParticleMinimumHalfSize = instanceOfInteractiveCanvas.lightParticleMinimumHalfSize;
+ let i = 0;
+ for( i = 0; i < numberOfLightParticle; i++ )
+ {
+  lightParticleSize[countOfTimerForProcessingVisualEffect][i] = Math.random() * rangeOfSizeOfLightParticle + lightParticleMinimumHalfSize;
+  lightParticleCount[countOfTimerForProcessingVisualEffect] = 0; // 描画累積回数を初期化する。
+  lightParticleCoordinateX[countOfTimerForProcessingVisualEffect][i] = coordinateX;
+  lightParticleCoordinateY[countOfTimerForProcessingVisualEffect][i] = coordinateY;
+  lightParticleMovementAmountX[countOfTimerForProcessingVisualEffect][i] = - 24 + 48 * (Math.random() + Math.random() + Math.random() + Math.random()) / 4;
+  lightParticleMovementAmountY[countOfTimerForProcessingVisualEffect][i] = - 24 + 48 * (Math.random() + Math.random() + Math.random() + Math.random()) / 4;
+  lightParticleChangeAmountOfMovementAmountX[countOfTimerForProcessingVisualEffect][i] = - 0.8 + 1.6 * (Math.random() + Math.random() + Math.random() + Math.random()) / 4;
+  lightParticleChangeAmountOfMovementAmountY[countOfTimerForProcessingVisualEffect][i] = - 0.8 + 1.6 * (Math.random() + Math.random() + Math.random() + Math.random()) / 4;
+ }
+
+
+ // 光る放射線の視覚効果の描画に関する値を初期化する。
+
+ lightLineAlpha[countOfTimerForProcessingVisualEffect] = 0.4;
+ let numberOfLightLine = instanceOfInteractiveCanvas.numberOfLightLine;
+ let lightLineMaximumLength = instanceOfInteractiveCanvas.lightLineMaximumLength;
+ let lightLineMinimumLength = instanceOfInteractiveCanvas.lightLineMinimumLength;
+ let rangeOfLengthOfLightLine = instanceOfInteractiveCanvas.lightLineMaximumLength - instanceOfInteractiveCanvas.lightLineMinimumLength;
+ for( i = 0; i < numberOfLightLine; i++ )
+ {
+  lightLineLength[countOfTimerForProcessingVisualEffect][i] = Math.random() * rangeOfSizeOfLightParticle + lightParticleMinimumHalfSize;
+  lightLineCoordinateX[countOfTimerForProcessingVisualEffect][i] = coordinateX;
+  lightLineCoordinateY[countOfTimerForProcessingVisualEffect][i] = coordinateY;
+  lightLineMovementAmountX[countOfTimerForProcessingVisualEffect][i] = - 12 + 24 * (Math.random() + Math.random()) / 2;
+  lightLineMovementAmountY[countOfTimerForProcessingVisualEffect][i] = - 12 + 24 * (Math.random() + Math.random()) / 2;
+ }
+
+
+ // 光る円盤の描画に関する値を初期化する。
+
+ instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[countOfTimerForProcessingVisualEffect] = coordinateX;
+ instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[countOfTimerForProcessingVisualEffect] = coordinateY;
+ instanceOfInteractiveCanvas.sizeOfWaveletCircle[countOfTimerForProcessingVisualEffect] = 64;
+ instanceOfInteractiveCanvas.growthRateOfWaveletCircle[countOfTimerForProcessingVisualEffect] = 2 * Math.random() + 5;
+ instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] = 0.4;
+ instanceOfInteractiveCanvas.waveletCircleLightness[countOfTimerForProcessingVisualEffect] = 75;
+
+
+ // 光る円輪の描画に関する値を初期化する。
+
+ instanceOfInteractiveCanvas.waveRingAlpha[countOfTimerForProcessingVisualEffect] = 0.98;
+
+
+ // 光球の描画に関する値を初期化する。
+
+ instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] = 90;
+ instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] = 0.98;
+ 
+
+
+ // 光る粒子を1つだけ別のレイヤーに描画して置く。
+
+ // 円形の色勾配を設定する。
+ let radialGradient = canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].createRadialGradient(
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 中心のx座標。
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 中心のy座標。
+  0,
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 中心のx座標。
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 中心のy座標。
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize // 半径。
+ );
+
+ let hueOfLightParticle = lightParticleHue[countOfTimerForProcessingVisualEffect];
+ radialGradient.addColorStop( 0.0, 'hsla( ' + hueOfLightParticle + ', 100%, 98%, 1.00 )' ); // 開始円の色を設定する。
+ radialGradient.addColorStop( 0.1, 'hsla( ' + hueOfLightParticle + ', 100%, 85%, 1.00 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.2, 'hsla( ' + hueOfLightParticle + ', 100%, 65%, 0.98 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.3, 'hsla( ' + hueOfLightParticle + ', 100%, 55%, 0.50 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.4, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.40 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.5, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.30 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.6, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.20 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.7, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.14 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.8, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.08 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.9, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.04 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 1.0, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.00 )' ); // 終了点の色を設定する。
+
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].save(); // 描画設定を保存する。
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].clearRect(
+  0, 0,
+  canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].canvas.width,
+  canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].canvas.height ); // 元のCanvas レイヤーの内容を消去する。
+
+ // 指定の色勾配で円弧を描画するように設定する。
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].beginPath(); // サブパスの作成を開始する。
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].arc(
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 中心のx座標。
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 中心のy座標。
+  instanceOfInteractiveCanvas.lightParticleMaximumHalfSize, // 半径。
+  0, // 開始角度。
+  2 * Math.PI, // 終了角度。
+  false );
+
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].fillStyle = radialGradient; // 塗り潰し色を代入する。
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].fill(); // パスの塗り潰しを実行する。
+ canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].restore(); // 描画の設定を元に戻す。
+ // 後にここで描画しておいた画像を大量にキャンヴァス上に複写する。
+
+ instanceOfInteractiveCanvas.processVisualEffect( countOfTimerForProcessingVisualEffect ); // 1回だけ光る粒子の視覚効果の処理関数を即時実行する。
+
+ instanceOfInteractiveCanvas.timerForProcessingVisualEffect[countOfTimerForProcessingVisualEffect] = setInterval( function(){thisInteractiveCanvas.processVisualEffect( countOfTimerForProcessingVisualEffect );}, 25 );
+ // 視覚効果の処理を行う関数のタイマーを始動させる。
+ // 引数はプリミティヴな値であり、参照渡しではなく値渡しとなる。
+
+ // 視覚効果の処理用タイマーの情報を更新する。
+ instanceOfInteractiveCanvas.countOfTimerForProcessingVisualEffect++;
+ if( instanceOfInteractiveCanvas.countOfTimerForProcessingVisualEffect >= instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect )
+ // 視覚効果の処理用タイマーの最大数に達していたならば以下の処理を行う。
+ {
+  instanceOfInteractiveCanvas.countOfTimerForProcessingVisualEffect = 0;
+ }
+
+ // 視覚効果の処理用タイマーを停止させるタイマーを始動させる。
+ let countOfTimerToStopProcessingVisualEffect = instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect; // プリミティヴな値を代入して関数に値渡しが出来るようにする。
+ instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[countOfTimerToStopProcessingVisualEffect] =
+  setTimeout( function(){thisInteractiveCanvas.stopTimerForProcessingVisualEffect( countOfTimerToStopProcessingVisualEffect );}, 2500 );
+ // 視覚効果の処理を行う関数のタイマーを停止させる関数のタイマーを始動させる。
+ // 引数はプリミティヴな値であり、参照渡しではなく値渡しとなる。
+
+ // 視覚効果の処理停止用のタイマーの情報を更新する。
+ instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect++;
+ if( instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect >= instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect )
+ // 視覚効果の処理用タイマーの最大数に達していたならば以下の処理を行う。
+ {
+  instanceOfInteractiveCanvas.countOfTimerToStopProcessingVisualEffect = 0;
+ }
+};
+
+// 視覚効果の処理を停止する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.stopTimerForProcessingVisualEffect = function( countOfTimerToStopProcessingVisualEffect )
+{
+ // 引数で受け取った番号のタイマーを停止させる。
+ if( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[countOfTimerToStopProcessingVisualEffect] !== null )
+ {
+  clearInterval( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[countOfTimerToStopProcessingVisualEffect] ); // タイマーを停止させる。
+  instanceOfInteractiveCanvas.timerForProcessingVisualEffect[countOfTimerToStopProcessingVisualEffect] = null;
+ }
+};
+
+// 視覚効果の処理用の全てのタイマーを停止させる為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.stopAllOfTimerForProcessingVisualEffect = function()
+{
+ let i = 0;
+ for( i = 0; i < instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect; i++ )
+ // 視覚効果の処理用タイマーを全て停止させる。
+ {
+  instanceOfInteractiveCanvas.stopTimerForProcessingVisualEffect( i );
+ }
+};
+
+// 視覚効果の処理を停止する為の全てのタイマーを停止させる為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.stopAllOfStopTimerForProcessingVisualEffect = function()
+{
+ // タイマー停止用の全てのタイマーを停止させる。
+ let i = 0;
+ for( i = 0; i < instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect; i++ )
+ {
+  if( instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[i] !== null )
+  {
+   clearInterval( instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[i] ); // タイマーを停止させる。
+   instanceOfInteractiveCanvas.timerToStopProcessingVisualEffect[i] = null;
+  }
+ }
+};
+
+// 視覚効果の処理する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.processVisualEffect = function( countOfTimerForProcessingVisualEffect )
+{
+ let poweredCountOfDrawing = Math.pow( lightParticleCount[countOfTimerForProcessingVisualEffect], 1.25 );
+ lightParticleCount[countOfTimerForProcessingVisualEffect]++;
+ lightParticleAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.0002; // 透明度を上げる。
+ lightLineAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.00125; // 透明度を上げる。
+
+ if( lightParticleAlpha[countOfTimerForProcessingVisualEffect] > 0 )
+ {
+  // 粒子の座標を計算する。
+  let numberOfLightParticle = instanceOfInteractiveCanvas.numberOfLightParticle;
+  let i = 0;
+  for( i = 0; i < numberOfLightParticle; i++ )
+  {
+   lightParticleMovementAmountX[countOfTimerForProcessingVisualEffect][i] += lightParticleChangeAmountOfMovementAmountX[countOfTimerForProcessingVisualEffect][i];
+   lightParticleCoordinateX[countOfTimerForProcessingVisualEffect][i]
+    += lightParticleMovementAmountX[countOfTimerForProcessingVisualEffect][i];
+
+   lightParticleMovementAmountY[countOfTimerForProcessingVisualEffect][i] += lightParticleChangeAmountOfMovementAmountY[countOfTimerForProcessingVisualEffect][i];
+   lightParticleCoordinateY[countOfTimerForProcessingVisualEffect][i]
+    += lightParticleMovementAmountY[countOfTimerForProcessingVisualEffect][i];
+  }
+
+  // 光る放射線の座標を計算する。
+  let numberOfLightLine = instanceOfInteractiveCanvas.numberOfLightLine;
+  for( i = 0; i < numberOfLightLine; i++ )
+  {
+   lightLineCoordinateX[countOfTimerForProcessingVisualEffect][i] += lightLineMovementAmountX[countOfTimerForProcessingVisualEffect][i];
+
+   lightLineCoordinateY[countOfTimerForProcessingVisualEffect][i] += lightLineMovementAmountY[countOfTimerForProcessingVisualEffect][i];
+  }
+
+  // 光る円盤の値を更新する。
+  instanceOfInteractiveCanvas.sizeOfWaveletCircle[countOfTimerForProcessingVisualEffect] += instanceOfInteractiveCanvas.growthRateOfWaveletCircle[countOfTimerForProcessingVisualEffect];
+
+  if( instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] > 0.2 )
+  {
+   instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.01; // 透明度を上げる。
+  }else
+  {
+   instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.0005; // 透明度を上げる。
+  }
+
+  if( instanceOfInteractiveCanvas.waveletCircleLightness[countOfTimerForProcessingVisualEffect] > 60 )
+  {
+   instanceOfInteractiveCanvas.waveletCircleLightness[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 1.0; // 明るさを下げる。
+  }
+
+  // 光る円輪の値を更新する。
+  if( instanceOfInteractiveCanvas.waveRingAlpha[countOfTimerForProcessingVisualEffect] > 0 )
+  {
+   instanceOfInteractiveCanvas.waveRingAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.0025; // 透明度を上げる。
+  }
+
+  // 光球の値を更新する。
+  if( instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] > 0.2 )
+  {
+   instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.005; // 透明度を上げる。
+  }else
+  {
+   instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.00025; // 透明度を上げる。
+  }
+  if( instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] > 60 )
+  {
+   instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.5; // 明るさを下げる。
+  }
+
+ }else
+ {
+  instanceOfInteractiveCanvas.stopTimerForProcessingVisualEffect( countOfTimerForProcessingVisualEffect );
+ }
+};
+
+// 視覚効果を描画する為のプロトタイプのメソッドを定義する。
+interactiveCanvas.prototype.drawVisualEffect = function()
+{
+ canvasLayerContextForVisualEffect.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext ); // 元のCanvas レイヤーの内容を消去する。
+
+ // 稼働中の描画用タイマーがあるかどうかを調べ、もし稼働中の描画用タイマーがあるならばオフスクリーン描画用のCanvas要素に画像を転写及び描画する。
+ let i = 0;
+ let j = 0;
+ for( i = 0; i < instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect; i++ )
+ {
+  if( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[i] !== null )
+  {
+
+   // 粒子を描画する。
+
+   if( lightParticleAlpha[i] > 0 )
+   {
+    canvasLayerContextForVisualEffect.save(); // 描画設定を保存する。
+    canvasLayerContextForVisualEffect.globalAlpha = lightParticleAlpha[i];
+
+    let lightParticleMaximumSize = instanceOfInteractiveCanvas.lightParticleMaximumHalfSize * 2;
+    let numberOfLightParticle = instanceOfInteractiveCanvas.numberOfLightParticle;
+    for( j = 0; j < numberOfLightParticle; j++ )
+    {
+     // 別のレイヤーに予め描画して置いた粒子の画像を適切な座標に適切な大きさで複写する。
+     canvasLayerContextForVisualEffect.drawImage(
+      canvasLayerForDrawingParticleInAdvance[i], // 複写元の画像。
+      0, // 複写元の画像の使用する領域のx座標。
+      0, // 複写元の画像の使用する領域のy座標。
+      lightParticleMaximumSize, // 複写元の画像の使用する領域の幅。
+      lightParticleMaximumSize, // 複写元の画像の使用する領域の高さ。
+      lightParticleCoordinateX[i][j] - lightParticleSize[i][j], // 複写先の領域のx座標。
+      lightParticleCoordinateY[i][j] - lightParticleSize[i][j], // 複写先の領域のy座標。
+      lightParticleSize[i][j] * 2, // 画像の複写後の幅。
+      lightParticleSize[i][j] * 2 ); // 画像の複写後の高さ。
+    }
+    canvasLayerContextForVisualEffect.restore(); // 描画の設定を元に戻す。
+   }
+
+
+   // 光る放射線を描画する。
+
+   if( lightLineAlpha[i] > 0 )
+   {
+    canvasLayerContextForVisualEffect.save(); // 描画設定を保存する。
+
+    canvasLayerContextForVisualEffect.lineWidth = 3; // 描画する線の幅を設定する。
+    canvasLayerContextForVisualEffect.lineCap = 'round'; // 描画する線の先端を丸める。
+    canvasLayerContextForVisualEffect.strokeStyle = 'hsla( ' + lightParticleHue[i] + ', 100%, 80%, ' + lightLineAlpha[i] + ' )'; // 描画色を代入する。
+
+    let numberOfLightLine = instanceOfInteractiveCanvas.numberOfLightLine;
+    for( j = 0; j < numberOfLightLine; j++ )
+    {
+     canvasLayerContextForVisualEffect.beginPath(); // サブパスの作成を開始する。
+     canvasLayerContextForVisualEffect.moveTo( lightLineCoordinateX[i][j], lightLineCoordinateY[i][j] ); // 新しいサブパスの開始点を指定する。
+     canvasLayerContextForVisualEffect.lineTo(
+      lightLineCoordinateX[i][j] + lightLineMovementAmountX[i][j] * 12,
+      lightLineCoordinateY[i][j] + lightLineMovementAmountY[i][j] * 12 ); // サブパスの座標を指定する。
+
+     canvasLayerContextForVisualEffect.stroke(); // パスの描画を実行する。
+    }
+
+    canvasLayerContextForVisualEffect.restore(); // 描画の設定を元に戻す。
+   }
+
+
+   // 光る円盤を描画する。
+
+   if( instanceOfInteractiveCanvas.waveletCircleAlpha[i] > 0 )
+   {
+    canvasLayerContextForVisualEffect.save(); // 描画設定を保存する。
+
+    canvasLayerContextForVisualEffect.beginPath(); // サブパスの作成を開始する。
+    canvasLayerContextForVisualEffect.arc(
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     instanceOfInteractiveCanvas.sizeOfWaveletCircle[i], // 半径。
+     0, // 開始角度。
+     2 * Math.PI, // 終了角度。
+     false );
+
+    canvasLayerContextForVisualEffect.fillStyle
+     = 'hsla( ' + lightParticleHue[i] + ', 100%, ' + instanceOfInteractiveCanvas.waveletCircleLightness[i] + '%, ' + instanceOfInteractiveCanvas.waveletCircleAlpha[i] + ' )'; // 塗り潰し色を代入する。
+    canvasLayerContextForVisualEffect.fill(); // パスの塗り潰しを実行する。
+
+    canvasLayerContextForVisualEffect.restore(); // 描画の設定を元に戻す。
+   }
+
+
+   // 光る円輪を描く。
+
+   if( instanceOfInteractiveCanvas.waveRingAlpha[i] > 0 )
+   {
+    canvasLayerContextForVisualEffect.save(); // 描画設定を保存する。
+
+    canvasLayerContextForVisualEffect.beginPath(); // サブパスの作成を開始する。
+    canvasLayerContextForVisualEffect.arc(
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     instanceOfInteractiveCanvas.sizeOfWaveletCircle[i], // 半径。
+     0, // 開始角度。
+     2 * Math.PI, // 終了角度。
+     false );
+
+    canvasLayerContextForVisualEffect.lineWidth = 2; // 描画する線の幅を設定する。
+    canvasLayerContextForVisualEffect.strokeStyle
+     = 'hsla( ' + lightParticleHue[i] + ', 100%, 75%, ' + instanceOfInteractiveCanvas.waveRingAlpha[i] + ' )'; // 描画色を代入する。
+    canvasLayerContextForVisualEffect.stroke(); // パスの描画を実行する。
+
+    canvasLayerContextForVisualEffect.restore(); // 描画の設定を元に戻す。
+   }
+
+
+   // 光球を描画する。
+
+   if( instanceOfInteractiveCanvas.waveLightBallAlpha[i] > 0 )
+   {
+    canvasLayerContextForVisualEffect.save(); // 描画設定を保存する。
+    canvasLayerContextForVisualEffect.beginPath(); // サブパスの作成を開始する。
+
+    // 円形の色勾配を設定する。
+    let radialGradient = canvasLayerContextForVisualEffect.createRadialGradient(
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     0,
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     instanceOfInteractiveCanvas.sizeOfWaveletCircle[i] * 0.5, // 半径。
+    );
+
+    let waveLightBallLightness = instanceOfInteractiveCanvas.waveLightBallLightness[i];
+    let waveLightBallAlpha = instanceOfInteractiveCanvas.waveLightBallAlpha[i];
+    radialGradient.addColorStop( 0, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 開始円の色を設定する。
+    waveLightBallLightness *= 0.75;
+    waveLightBallAlpha *= 0.75;
+    radialGradient.addColorStop( 0.5, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 中間点の位置と色を設定する。
+    waveLightBallLightness *= 0.5;
+    waveLightBallAlpha *= 0.5;
+    radialGradient.addColorStop( 1.0, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 終了点の色を設定する。
+    canvasLayerContextForVisualEffect.fillStyle = radialGradient; // 塗り潰し色を代入する。
+
+    // 円弧を描画するように設定する。
+    canvasLayerContextForVisualEffect.arc(
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     instanceOfInteractiveCanvas.sizeOfWaveletCircle[i], // 半径。
+     0, 2 * Math.PI, false
+    );
+
+    canvasLayerContextForVisualEffect.clip(); // 円形に切り抜く。
+
+    // 指定の色勾配で円弧を描画するように設定する。
+    canvasLayerContextForVisualEffect.beginPath(); // サブパスの作成を開始する。
+    canvasLayerContextForVisualEffect.arc(
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     instanceOfInteractiveCanvas.sizeOfWaveletCircle[i] * 0.5, // 半径。
+     0, 2 * Math.PI, false
+    );
+    canvasLayerContextForVisualEffect.fill(); // パスの塗り潰しを実行する。
+    canvasLayerContextForVisualEffect.restore(); // 描画の設定を元に戻す。
+   }
+
+
+   // 光る円輪を描く。
+   if( instanceOfInteractiveCanvas.waveRingAlpha[i] > 0 )
+   {
+    canvasLayerContextForVisualEffect.save(); // 描画設定を保存する。
+
+    canvasLayerContextForVisualEffect.beginPath(); // サブパスの作成を開始する。
+    canvasLayerContextForVisualEffect.arc(
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleX[i], // 中心のx座標。
+     instanceOfInteractiveCanvas.coordinateOfWaveletCircleY[i], // 中心のy座標。
+     instanceOfInteractiveCanvas.sizeOfWaveletCircle[i] * 0.5, // 半径。
+     0, // 開始角度。
+     2 * Math.PI, // 終了角度。
+     false );
+
+    canvasLayerContextForVisualEffect.lineWidth = 2; // 描画する線の幅を設定する。
+    canvasLayerContextForVisualEffect.strokeStyle
+     = 'hsla( ' + lightParticleHue[i] + ', 100%, 75%, ' + instanceOfInteractiveCanvas.waveRingAlpha[i] + ' )'; // 描画色を代入する。
+    canvasLayerContextForVisualEffect.stroke(); // パスの描画を実行する。
+
+    canvasLayerContextForVisualEffect.restore(); // 描画の設定を元に戻す。
+   }
+  }
+ }
+};
+
+
+///////////////////////////////////////////////////////
+
+
+let integratedValueOfChangeAmountLeft = [];
+let pastValueOfSpectrumLeft = [];
+let pastValueOfSpectrumRight = [];
+let integratedValueOfChangeAmountRight = [];
+let integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
+let integratedValueOfAllOfFrequencyChangeAmountRight = 0;
+let pastValueOfIntegratedValueOfChangeAmountLeft = [];
+let pastValueOfIntegratedValueOfChangeAmountRight = [];
+
+// 音楽のスペクトラム アナライザーを描画するコンストラクターを関数式により定義する。
+/** @constructor */ 
+let spectrumVisualizer = function()
+{
+ // プロパティーを定義して固有の値を格納する。
+ this.timerForDrawingSpectrum = null;
+
+ this.wasProcessingExcutedLastTime = false;
+ this.isAttackVisualizerEnable = true;
+
+ this.numberOfLowerCutOff = 0;
+ this.numberOfUpperCutOff = 4;
+ this.limitOfCount = instanceOfSetSound.sizeOfFFT / 2 - this.numberOfUpperCutOff;
+ this.numberOfBar = this.limitOfCount - this.numberOfLowerCutOff;
+ this.intervalOfBar = widthOfCanvasContext / 2 / this.numberOfBar;
+ this.widthOfBar = this.intervalOfBar * 0.9;
+};
+
+// 音楽のスペクトラム アナライザーの描画を開始する為のプロトタイプのメソッドを定義する。
+spectrumVisualizer.prototype.startTimerForDrawingSpectrum = function()
+{
+ if( instanceOfSpectrumVisualizer.timerForDrawingSpectrum === null )
+ // もし未だ描画を開始していないならば以下の処理を行う。
+ {
+  // 初期化を行う。
+
+  spectrumLeft = new Float32Array( instanceOfSetSound.analyserNodeLeft.frequencyBinCount );
+  spectrumRight = new Float32Array( instanceOfSetSound.analyserNodeRight.frequencyBinCount );
+
+  instanceOfSpectrumVisualizer.wasProcessingExcutedLastTime = false;
+  let i = 0;
+  let limitOfCount = instanceOfSpectrumVisualizer.limitOfCount;
+  for( i = 0; i < limitOfCount; i++ )
+  {
+   pastValueOfSpectrumLeft[i] = 0;
+   pastValueOfSpectrumRight[i] = 0;
+   integratedValueOfChangeAmountLeft[i] = 0;
+   integratedValueOfChangeAmountRight[i] = 0;
+   pastValueOfIntegratedValueOfChangeAmountLeft[i] = 0;
+   pastValueOfIntegratedValueOfChangeAmountRight[i] = 0;
+   coefficientValue[i] = 192 / (i / limitOfCount + 0.005);
+  }
+
+  integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
+  integratedValueOfAllOfFrequencyChangeAmountRight = 0;
+
+  let thisSpectrumVisualizer = this;
+  instanceOfSpectrumVisualizer.drawSpectrum(); // 1回だけ即時実行する。
+  instanceOfSpectrumVisualizer.timerForDrawingSpectrum = setInterval( function(){thisSpectrumVisualizer.drawSpectrum();}, 40 ); // タイマーによるインターヴァル動作で色彩豊かな波を描画する関数を実行する。
+ }
+};
+
+// 音楽のスペクトラム アナライザーの描画を停止する為のプロトタイプのメソッドを定義する。
+spectrumVisualizer.prototype.stopTimerForDrawingSpectrum = function()
+{
+ if( instanceOfSpectrumVisualizer.timerForDrawingSpectrum !== null )
+ // もしタイマーが稼働中であるならば以下の処理を行う。
+ {
+  clearInterval( instanceOfSpectrumVisualizer.timerForDrawingSpectrum ); // タイマーを停止させる。
+  instanceOfSpectrumVisualizer.timerForDrawingSpectrum = null;
+ }
+};
+
+// 音楽のスペクトラム アナライザーを描画する為のプロトタイプのメソッドを定義する。
+spectrumVisualizer.prototype.drawSpectrum = function()
+{
+ instanceOfSetSound.analyserNodeLeft.getFloatFrequencyData( spectrumLeft );
+ instanceOfSetSound.analyserNodeRight.getFloatFrequencyData( spectrumRight );
+ let maxDecibels = - 12;
+ let range = 108;
+ let hueOfBar = 0;
+ let saturationOfBar = 100;
+ let defaultLightnessOfBar = 4;
+ let lightnessOfBar = defaultLightnessOfBar;
+ let numberOfLowerCutOff = instanceOfSpectrumVisualizer.numberOfLowerCutOff;
+ let numberOfUpperCutOff = instanceOfSpectrumVisualizer.numberOfUpperCutOff;
+ let numberOfBar = instanceOfSpectrumVisualizer.numberOfBar;
+ let intervalOfBar = instanceOfSpectrumVisualizer.intervalOfBar;
+ let widthOfBar = instanceOfSpectrumVisualizer.widthOfBar;
+ let maxLengthOfBar = heightOfCanvasContext * 0.4 * (Math.pow( instanceOfSetSound.musicPlaybackGain - 1, 3 ) + 1);
+
+
+ // Canvas画面を初期化する。
+ canvasLayerContextForVisualizerOfSpectrumAnalyser.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext ); // Canvas レイヤーの内容を消去する。
+
+ 
+ // 描画の設定をする。
+ canvasLayerContextForVisualizerOfSpectrumAnalyser.save(); // 描画設定を保存する。
+
+ integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
+ integratedValueOfAllOfFrequencyChangeAmountRight = 0;
+
+ let changeAmountLeft = 0;
+ let changeAmountRight = 0;
+ let additionalAmountLeft = 0;
+ let additionalAmountRight = 0;
+ let standardHueOfBar = 0;
+ if( instanceOfInteractiveCanvas !== null )
+ {
+  standardHueOfBar = instanceOfInteractiveCanvas.hueOfBackground - 180;
+ }
+ if( standardHueOfBar < 0 )
+ {
+  standardHueOfBar += 360;
+ }
+
+
+ // 垂直方向のグラデーションを付ける。
+ let hueOfGradient = standardHueOfBar;
+ let linearGradient = canvasLayerContextForVisualizerOfSpectrumAnalyser.createLinearGradient( 0, heightOfCanvasContext, 0, heightOfCanvasContext - maxLengthOfBar );
+ linearGradient.addColorStop( 0.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 0 + '%,' + 0.00 + ')' );
+ hueOfGradient -= 20;
+ linearGradient.addColorStop( 0.25, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 30 + '%,' + 0.30 + ')' );
+ hueOfGradient -= 20;
+ linearGradient.addColorStop( 0.50, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 60 + '%,' + 0.60 + ')' );
+ hueOfGradient -= 20;
+ linearGradient.addColorStop( 0.75, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 80 + '%,' + 0.80 + ')' );
+ hueOfGradient -= 20;
+ linearGradient.addColorStop( 1.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 90 + '%,' + 0.90 + ')' );
+
+
+ let amountOfSubtraction = 0;
+ let i = 0;
+ let limitOfCount = instanceOfSpectrumVisualizer.limitOfCount;
+ for( i = numberOfLowerCutOff; i < limitOfCount; i++ )
+ {
+  if( spectrumLeft[i] !== -Infinity )
+  {
+   normalizedSpectrumLeft[i] = 1 + (spectrumLeft[i] - maxDecibels) / range;
+  }else
+  {
+   normalizedSpectrumLeft[i] = 0;
+  }
+
+  if( spectrumRight[i] !== -Infinity )
+  {
+   normalizedSpectrumRight[i] = 1 + (spectrumRight[i] - maxDecibels) / range;
+  }else
+  {
+   normalizedSpectrumRight[i] = 0;
+  }
+
+
+  if( instanceOfSpectrumVisualizer.wasProcessingExcutedLastTime === false )
+  // 前回処理を実行していないならば以下の処理を行う。
+  {
+   pastValueOfSpectrumLeft[i] = normalizedSpectrumLeft[i];
+   pastValueOfSpectrumRight[i] = normalizedSpectrumRight[i];
+  }
+
+
+  // 前回の値と今回の値との差分を取る。
+  changeAmountLeft = normalizedSpectrumLeft[i] - pastValueOfSpectrumLeft[i];
+  changeAmountRight = normalizedSpectrumRight[i] - pastValueOfSpectrumRight[i];
+
+  // 前回よりも値が増加したならば増加分を加算する。
+
+  if( changeAmountLeft > 0 )
+  {
+   integratedValueOfChangeAmountLeft[i] += changeAmountLeft;
+  }
+
+  if( changeAmountRight > 0 )
+  {
+   integratedValueOfChangeAmountRight[i] += changeAmountRight;
+  }
+
+
+  // 前回の積算値よりも今回の積算値の方が値が増加したならば、全ての周波数帯についての増加分を合算して行く。
+
+  // 低周波領域ほど値を大きくする。
+  if( integratedValueOfChangeAmountLeft[i] - pastValueOfIntegratedValueOfChangeAmountLeft[i] > 0 )
+  {
+   integratedValueOfAllOfFrequencyChangeAmountLeft
+    += (integratedValueOfChangeAmountLeft[i] - pastValueOfIntegratedValueOfChangeAmountLeft[i]) * coefficientValue[i];
+  }
+
+  if( integratedValueOfChangeAmountRight[i] - pastValueOfIntegratedValueOfChangeAmountRight[i] > 0 )
+  {
+   integratedValueOfAllOfFrequencyChangeAmountRight
+    += (integratedValueOfChangeAmountRight[i] - pastValueOfIntegratedValueOfChangeAmountRight[i]) * coefficientValue[i];
+  }
+
+
+  // 値を記憶させる。
+  pastValueOfIntegratedValueOfChangeAmountLeft[i] = integratedValueOfChangeAmountLeft[i];
+  pastValueOfIntegratedValueOfChangeAmountRight[i] = integratedValueOfChangeAmountRight[i];
+
+  // 左チャンネルのメーターを描画する。
+
+  amountOfSubtractionOfHueOfBar = integratedValueOfChangeAmountLeft[i] * 140;
+  if( amountOfSubtractionOfHueOfBar > 64 )
+  {
+   amountOfSubtractionOfHueOfBar = 64;
+  }
+
+  hueOfBar = standardHueOfBar - amountOfSubtractionOfHueOfBar;
+  if( hueOfBar < 0 )
+  {
+   hueOfBar = 360 + hueOfBar;
+  }
+
+  lightnessOfBar = defaultLightnessOfBar + normalizedSpectrumLeft[i] * 16 + integratedValueOfChangeAmountLeft[i] * 120;
+  if( lightnessOfBar > 100 )
+  {
+   lightnessOfBar = 100;
+  }
+
+  lightnessOfBar = - 0.009 * Math.pow( lightnessOfBar - 100, 2 ) + 80;
+
+  if( lightnessOfBar < defaultLightnessOfBar )
+  {
+   lightnessOfBar = defaultLightnessOfBar;
+  }
+
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = 'hsl( ' + hueOfBar + ', ' + saturationOfBar + '%, ' + lightnessOfBar + '% )';
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
+   (i - numberOfLowerCutOff) * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * maxLengthOfBar,
+   widthOfBar, heightOfCanvasContext );
+  // 描画する。
+
+  integratedValueOfChangeAmountLeft[i] *= 0.92;
+
+  // 値を記憶させる。
+  pastValueOfSpectrumLeft[i] = normalizedSpectrumLeft[i];
+
+
+  // 右チャンネルのメーターを描画する。
+
+  amountOfSubtractionOfHueOfBar = integratedValueOfChangeAmountRight[i] * 140;
+  if( amountOfSubtractionOfHueOfBar > 64 )
+  {
+   amountOfSubtractionOfHueOfBar = 64;
+  }
+
+  hueOfBar = standardHueOfBar - amountOfSubtractionOfHueOfBar;
+  if( hueOfBar < 0 )
+  {
+   hueOfBar = 360 + hueOfBar;
+  }
+
+  lightnessOfBar = defaultLightnessOfBar + normalizedSpectrumRight[i] * 16 + integratedValueOfChangeAmountRight[i] * 120;
+  if( lightnessOfBar > 100 )
+  {
+   lightnessOfBar = 100;
+  }
+
+  lightnessOfBar = - 0.009 * Math.pow( lightnessOfBar - 100, 2 ) + 80;
+
+  if( lightnessOfBar < defaultLightnessOfBar )
+  {
+   lightnessOfBar = defaultLightnessOfBar;
+  }
+
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = 'hsl( ' + hueOfBar + ', ' + saturationOfBar + '%, ' + lightnessOfBar + '% )';
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
+   widthOfCanvasContext - (i - numberOfLowerCutOff) * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * maxLengthOfBar,
+   widthOfBar, heightOfCanvasContext );
+  // 描画する。
+
+  integratedValueOfChangeAmountRight[i] *= 0.92;
+
+  // 値を記憶させる。
+  pastValueOfSpectrumRight[i] = normalizedSpectrumRight[i];
+ }
+
+
+ canvasLayerContextForVisualizerOfSpectrumAnalyser.globalCompositeOperation = "lighter";
+ for( i = numberOfLowerCutOff; i < limitOfCount; i++ )
+ {
+  // メーターにグラデーションを付ける。
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = linearGradient;
+
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
+   (i - numberOfLowerCutOff) * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * maxLengthOfBar,
+   widthOfBar, heightOfCanvasContext );
+
+  canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
+   widthOfCanvasContext - (i - numberOfLowerCutOff) * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * maxLengthOfBar,
+   widthOfBar, heightOfCanvasContext );
+ }
+ canvasLayerContextForVisualizerOfSpectrumAnalyser.globalCompositeOperation = "source-over";
+
+ instanceOfSpectrumVisualizer.wasProcessingExcutedLastTime = true;
+
+
+ if( instanceOfSpectrumVisualizer.isAttackVisualizerEnable === true )
+ {
+  if( instanceOfInteractiveCanvas !== null )
+  {
+   if( integratedValueOfAllOfFrequencyChangeAmountLeft > 2048 || integratedValueOfAllOfFrequencyChangeAmountRight > 2048 )
+   {
+    let playingMode = 'Auto';
+    setTimeout( instanceOfInteractiveCanvas.processStartOfVisualEffect( playingMode ), 0 );
+    instanceOfSpectrumVisualizer.disableAttackVisualizer();
+   }
+  }
+ }
+
+ canvasLayerContextForVisualizerOfSpectrumAnalyser.restore(); // 描画の設定を元に戻す。
+
+};
+
+// 音楽のアタックの視覚化の処理を停止する為のプロトタイプのメソッドを定義する。
+spectrumVisualizer.prototype.disableAttackVisualizer = function()
+{
+ instanceOfSpectrumVisualizer.isAttackVisualizerEnable = false;
+ setTimeout( function(){instanceOfSpectrumVisualizer.isAttackVisualizerEnable = true}, 160 );
+};
+
+
+///////////////////////////////////////////////////////
+
+
+// 音楽のプレイリストの取り込みを実行する為の関数のコンストラクターを関数式により定義する。
+/** @constructor */ 
+let importPlaylist = function()
+{
+ this.fileReader = new FileReader();
+ this.variableForFunctionOfHandlingFileSelection = null;
+ this.variableForFunctionOfHandlingLoadingCompletion = null;
+ this.addFileSelectionHandler(); // プレイリストのファイルを選択した際のイヴェントのリスナーを設定する。
+ this.addLoadingCompletionHandler(); // プレイリストのファイルの読み込みが完了した際のイヴェントのリスナーを設定する。
+
+
+ // エラー処理を行う。
+ this.fileReader.onerror = function( event )
+ {
+  switch( event.target.error.code )
+  {
+   case event.target.error.NOT_FOUND_ERR:
+    alert( 'Error: NOT_FOUND_ERR' );
+    break;
+
+   case event.target.error.SECURITY_ERR:
+    alert( 'Error: SECURITY_ERR' );
+    break;
+
+   case event.target.error.NOT_READABLE_ERR:
+    alert( 'Error: NOT_READABLE_ERR' );
+    break;
+
+   case event.target.error.ABORT_ERR:
+    // ファイルの読み取りが中止された場合。
+    break;
+
+   default:
+    alert( 'An error occurred.' );
+  }
+ };
+};
+
+// 音楽のプレイリストのファイルを選択した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+importPlaylist.prototype.addFileSelectionHandler = function()
+{
+ let thisImportPlaylist = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingFileSelection = function( event ){thisImportPlaylist.handleFileSelection( event );};
+ document.getElementById( 'inputPlaylistFile' ).addEventListener( 'change', this.variableForFunctionOfHandlingFileSelection, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// 音楽のプレイリストのファイルを選択した際の処理を行う為のプロトタイプのメソッドを定義する。
+importPlaylist.prototype.handleFileSelection = function( event )
+{
+ let file = event.target.files[0]; // 新たなオブジェクトを宣言して、ファイル オブジェクトのリストである 'FileList' オブジェクトの参照の値渡しをする。
+
+ // 選択したファイルをテキストとして読み込ませる。
+ instanceOfImportPlaylist.fileReader.readAsText( file );
+};
+
+// 音楽のプレイリストのファイルの読み込みが完了した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+importPlaylist.prototype.addLoadingCompletionHandler = function()
+{
+ let thisImportPlaylist = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingLoadingCompletion = function( event ){thisImportPlaylist.handleLoadingCompletion();};
+ this.fileReader.addEventListener( 'load', this.variableForFunctionOfHandlingLoadingCompletion, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// 音楽のプレイリストのファイルの読み込みが完了した際の処理を行う為のプロトタイプのメソッドを定義する。
+importPlaylist.prototype.handleLoadingCompletion = function()
+{
+ let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+
+ let filePathList = [];
+ let textData = instanceOfImportPlaylist.fileReader.result;
+
+ textData = textData.split( '\n' )
+
+ let divElementOfButtonToSelectMusic = null;
+
+ let i = 0;
+ let j = 0;
+ let k = 0;
+ let maximumOfNumberOfTextData = textData.length * 2;
+ let maximumOfNumberOfFilePathList = numberOfWholeFile;
+ for( i = 0, k = 0; i < maximumOfNumberOfFilePathList; i++ )
+ {
+  for( j = 0; j < maximumOfNumberOfTextData; j += 2 )
+  {
+   if( fileList[i] === textData[j] )
+   // 文字列が完全に一致したならば以下の処理を行う。
+   {
+    divElementOfButtonToSelectMusic = document.getElementById( 'selectButtonOfMusic' + i );
+
+    if( checkboxToHideUnselectedMusic[0].checked === false )
+    // 非選択項目が隠されていないならば以下の処理を行う。
+    {
+     if( textData[j + 1] === '[/1/]' )
+     {
+      divElementOfButtonToSelectMusic.style['background-color'] = '#eeeeee';
+      fileSelectionStatusList[i] = true;
+     }else
+     {
+      divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+      fileSelectionStatusList[i] = false;
+     }
+    }else
+    // 非選択項目が隠されているならば以下の処理を行う。
+    {
+     if( textData[j + 1] === '[/1/]' )
+     {
+      fileSelectionStatusList[i] = true;
+     }else
+     {
+      fileSelectionStatusList[i] = false;
+     }
+    }
+   }
+  }
+ }
+
+ // プレイリストのデータをWeb Storage APIでローカル ストレージに保存する。
+ savePlaylist();
+
+ // Web Storage APIでローカル ストレージに保存されているプレイリストを読み込む。
+ loadPlaylist();
+};
+
+instanceOfImportPlaylist = new importPlaylist();
+
+
+///////////////////////////////////////////////////////
+
+
+// Canvasを終了する関数の宣言と定義をする。
+function canvasTerminate()
+{
+ // スペクトラム アナライザーのヴィジュアライザーの動作中のタイマーを停止する。
+ if( instanceOfSpectrumVisualizer !== null )
+ {
+  instanceOfSpectrumVisualizer.stopTimerForDrawingSpectrum();
+ }
+
+ instanceOfInteractiveCanvas.stopAllOfInteractiveCanvasTimer(); // インタラクティヴ キャンヴァスで動作中のタイマーを全て停止する。
+ instanceOfInteractiveCanvas = null; // インタラクティヴ キャンヴァスのインスタンスへの参照を消去する。
+
+ if( isMusicOutput === false && isRandomSoundOutput === false )
+ {
+  instanceOfSetSoundOfMinimalLevelTone.stopSoundOfMinimalLevelTone( instanceOfSetSoundOfMinimalLevelTone ); // 極微小音出力を停止する。
+  isMinimalLevelToneOutput = false;
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// Canvasを開始する関数の宣言と定義をする。
+function canvasStart()
+{
+ if( instanceOfSetSoundOfMinimalLevelTone === null )
+ {
+  instanceOfSetSoundOfMinimalLevelTone = new setSoundOfMinimalLevelTone();
+ }
+
+ if( isMinimalLevelToneOutput === false )
+ {
+  instanceOfSetSoundOfMinimalLevelTone.startSoundOfMinimalLevelTone(); // 極微小音出力を開始する。
+  isMinimalLevelToneOutput = true;
+ }
+
+ if( instanceOfInteractiveCanvas !== null )
+ {
+  instanceOfInteractiveCanvas.stopAllOfInteractiveCanvasTimer(); // インタラクティヴ キャンヴァスで動作中のタイマーを全て停止する。
+  instanceOfInteractiveCanvas = null; // インタラクティヴ キャンヴァスのインスタンスへの参照を消去する。
+ }
+
+ // 新たにインタラクティヴ キャンヴァスのインスタンスを作成する。
+ instanceOfInteractiveCanvas = new interactiveCanvas();
+
+ if( instanceOfSetSound === null )
+ {
+  instanceOfSetSound = new setSound();
+ }
+
+ if( isMusicOutput === true )
+ // 音楽を出力中であるならば以下の処理を行う。
+ {
+  // 画面にスペクトラム アナライザーを表示する。
+  if( instanceOfSpectrumVisualizer === null )
+  {
+   instanceOfSpectrumVisualizer = new spectrumVisualizer();
+  }
+  instanceOfSpectrumVisualizer.startTimerForDrawingSpectrum();
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// Canvasの作動、停止のトグル スウィッチの関数の宣言と定義をする。
+function toggleCanvasPlayOrStop()
+{
+ if( isCanvasOn === true )
+ {
+  isCanvasOn = false;
+  canvasTerminate();
+ }else if( isCanvasOn === false )
+ {
+  canvasStart();
+  isCanvasOn = true;
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// Canvasの作動、一時停止のトグル スウィッチの関数の宣言と定義をする。
+function toggleCanvasPlayOrPaused()
+{
+ if( document.hidden === true && isCanvasOn === true )
+ {
+  canvasTerminate();
+ }else if( document.hidden === false && isCanvasOn === true )
+ {
+  canvasStart();
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+function toggleMusicPlayOrStop()
+{
+ let i = 0;
+ if( isMusicOutput === true )
+ {
+  if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null )
+  // もし再生中の音楽があるならば以下の処理を行う。
+  {
+   nextMusicOutput = false;
+   changeMusicNext = false;
+
+  // 次の楽曲に変更するボタンを使用不可能にする。
+  document.getElementById( 'buttounToChangeToNextMusic' ).disabled = true;
+
+   // 再生していた音を停止させる。
+   instanceOfSetSound.stopMusic();
+
+   // 音楽再生ボタンを使用不可能にする。
+   document.getElementById( 'buttounToPlayMusic' ).disabled = true;
+  }
+  isMusicOutput = false;
+
+  if( isCanvasOn === false && isRandomSoundOutput === false )
+  {
+   instanceOfSetSoundOfMinimalLevelTone.stopSoundOfMinimalLevelTone( instanceOfSetSoundOfMinimalLevelTone ); // 極微小音出力を停止する。
+   isMinimalLevelToneOutput = false;
+  }
+
+ }else
+ {
+  if( instanceOfSetSoundOfMinimalLevelTone === null )
+  {
+   instanceOfSetSoundOfMinimalLevelTone = new setSoundOfMinimalLevelTone();
+  }
+
+  if( isMinimalLevelToneOutput === false )
+  {
+   instanceOfSetSoundOfMinimalLevelTone.startSoundOfMinimalLevelTone(); // 極微小音出力を開始する。
+   isMinimalLevelToneOutput = true;
+  }
+
+  if( instanceOfSetSound === null )
+  {
+   instanceOfSetSound = new setSound();
+  }
+
+
+  // 音楽を出力させる。
+
+  changeMusicVolume(); // 音楽の再生音量を設定する。
+  nextMusicOutput = true;
+  changeMusicNext = true;
+
+  // 次の楽曲に変更するボタンを使用可能にする。
+  document.getElementById( 'buttounToChangeToNextMusic' ).disabled = false;
+
+  isMusicOutput = true;
+  instanceOfSetSound.playMusic();
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+function changeMusic( itemNumber )
+{
+ let divElementOfButtonToSelectMusic = null;
+ let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+
+ if( checkboxToHideUnselectedMusic[0].checked === false )
+ // 非選択項目が隠されていないならば以下の処理を行う。
+ {
+  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+
+  let i = 0;
+  let j = 0;
+  for( i = 0, j = - 1; i < numberOfWholeFile; i++ )
+  {
+   if( fileSelectionStatusList[i] === true )
+   {
+    j++;
+   }
+
+   if( i === itemNumber )
+   {
+    break;
+   }
+  }
+
+  musicNumberCurrentlyPlayingInSelected = j;
+  musicNumberCurrentlyPlayingInWhole = itemNumber;
+
+ }else
+ // 非選択項目が隠されているならば以下の処理を行う。
+ {
+  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
+
+  musicNumberCurrentlyPlayingInSelected = itemNumber;
+  musicNumberCurrentlyPlayingInWhole = listOfCheckedFileNumberToAllFileNumber[itemNumber];
+ }
+
+ divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
+
+ divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + itemNumber );
+ divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+
+
+ if( isMusicOutput === true )
+ {
+  changeMusicNext = false;
+
+  // 音楽を再生させる。
+  instanceOfSetSound.playMusic();
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+function changeMusicVolume()
+{
+ let elementOfRangeInputOfMusicVolume = document.getElementById( 'rangeForMusicVolume' );
+ let gainOfMusicOutput = elementOfRangeInputOfMusicVolume.value / (elementOfRangeInputOfMusicVolume.getAttribute( 'max' ) - elementOfRangeInputOfMusicVolume.getAttribute( 'min' ));
+
+ // 音量をパーセンテージで表示する。
+ let elementOfIndicatorOfMusicVolume = document.getElementById( 'indicatorOfMusicVolume' );
+ elementOfIndicatorOfMusicVolume.textContent = Math.floor( gainOfMusicOutput * 100 ) + '%';
+
+ if( instanceOfSetSound !== null )
+ {
+  instanceOfSetSound.musicPlaybackGain = gainOfMusicOutput;
+ }
+
+ if( isMusicOutput === true )
+ {
+  // 音量を変更する。
+  instanceOfSetSound.gainNodeForMusicPlayback.gain.setValueAtTime( gainOfMusicOutput, 0 );
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+function changeToNextMusic()
+{
+ if( instanceOfSetSound !== null )
+ {
+  if( isMusicOutput === true )
+  {
+   changeMusicNext = true;
+
+   // 曲の再生を終了させて次の楽曲を再生する。
+   if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null )
+   {
+    // 曲の再生を終了させる。
+    instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( 0 );
+   }
+  }
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+function checkOptionOfPlayingRandomSound()
+{
+ let checkbox = document.getElementsByName( 'checkboxToPlayRandomSound' );
+ if( checkbox[0].checked === true )
+ // 自動ランダム発音のチェックボックスにチェック マークが入っているならば以下の処理を行う。
+ {
+
+  if( instanceOfSetSoundOfMinimalLevelTone === null )
+  {
+   instanceOfSetSoundOfMinimalLevelTone = new setSoundOfMinimalLevelTone();
+  }
+
+  if( isMinimalLevelToneOutput === false )
+  {
+   instanceOfSetSoundOfMinimalLevelTone.startSoundOfMinimalLevelTone(); // 極微小音出力を開始する。
+   isMinimalLevelToneOutput = true;
+  }
+
+  if( instanceOfSetSound === null )
+  {
+   instanceOfSetSound = new setSound();
+  }
+
+  isRandomSoundOutput = true;
+
+  // 自動ランダム発音を開始する。
+  instanceOfSetSound.playRandomSound();
+
+ }else
+ {
+  if( instanceOfSetSound !== null )
+  {
+   // 自動ランダム発音のタイマーが動作中ならばこれを停止させる。
+   if( instanceOfSetSound.timerForRandomSoundOutput !== null )
+   {
+    clearTimeout( instanceOfSetSound.timerForRandomSoundOutput );
+    instanceOfSetSound.timerForRandomSoundOutput = null;
+   }
+  }
+
+  isRandomSoundOutput = false;
+
+  if( isMusicOutput === false && isCanvasOn === false && isMinimalLevelToneOutput === true )
+  {
+   instanceOfSetSoundOfMinimalLevelTone.stopSoundOfMinimalLevelTone( instanceOfSetSoundOfMinimalLevelTone ); // 極微小音出力を停止する。
+   isMinimalLevelToneOutput = false;
+  }
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// 音楽のプレイリスト内の再生中の楽曲の項目の箇所にスクロールする為の関数を宣言する。
+function scrollToItem()
+{
+ let divElementOfMusicItem = null;
+ let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+ if( checkboxToHideUnselectedMusic[0].checked === false )
+ // 非選択項目が隠されていないならば以下の処理を行う。
+ {
+  divElementOfMusicItem = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+ }else
+ // 非選択項目が隠されているならば以下の処理を行う。
+ {
+  divElementOfMusicItem = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
+ }
+
+ if( divElementOfMusicItem !== null )
+ // もしその楽曲がリストに表示されているならば以下の処理を行う。
+ {
+  let clientRectOfMusicItem = divElementOfMusicItem.getBoundingClientRect();
+  let clientRectOfMusicListArea = document.getElementById( 'musicListArea1_3' ).getBoundingClientRect();
+
+  let scrollYOfMusicItemInMusicListArea = document.getElementById( 'musicListArea1_3' ).scrollTop + (clientRectOfMusicItem.top - clientRectOfMusicListArea.top);
+
+  document.getElementById( 'musicListArea1_3' ).scrollTop = scrollYOfMusicItemInMusicListArea - 4;
+
+  clientRectOfMusicItem = divElementOfMusicItem.getBoundingClientRect();
+
+  window.scrollTo( 0, clientRectOfMusicItem.top - 4 );
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// 音楽の非選択の項目の表示を切り替える為の関数を宣言する。
+function hideUnselectedMusic()
+{
+ let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+
+ let output = []; // 出力内容を格納する為の配列を宣言する。
+ let filePath = '';
+ let previousFilePath = '';
+ let maximumOfNumber = 0;
+ if( checkboxToHideUnselectedMusic[0].checked === true )
+ // 非選択項目を隠すチェックボックスにチェック マークが入ったならば以下の処理を行う。
+ {
+  let checkedFileNumber = 0;
+  let i = 0;
+  for( i = 0; i < numberOfSelectedFile; i++ )
+  {
+   checkedFileNumber = listOfCheckedFileNumberToAllFileNumber[i];
+
+   // 選択したファイル名のラジオ ボタンのリストを生成する。
+
+   // ファイルの相対パスからファイル名以外の部分を取り出す。
+   filePath = fileList[checkedFileNumber].slice( 0, - fileNameList[checkedFileNumber].length );
+
+   if( filePath !== previousFilePath )
+   // 前のファイルパスと一致しないならば以下の処理を行う。
+   {
+    output.push( '<div style="margin-top: 8px; padding-left: 8px; background-color: #2e2e2e">', filePath, '</div>' );
+   }
+
+   previousFilePath = filePath;
+   output.push(
+    '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+    fileNameList[checkedFileNumber],
+    '</div>' );
+  }
+ }else
+ // 非選択項目を隠すチェックボックスにチェック マークが無くなったならば以下の処理を行う。
+ {
+  for( i = 0; i < numberOfWholeFile; i++ )
+  {
+   // ファイル名のラジオ ボタンのリストを生成する。
+
+   // ファイルの相対パスからファイル名以外の部分を取り出す。
+   filePath = fileList[i].slice( 0, - fileNameList[i].length );
+
+   if( filePath !== previousFilePath )
+   // 前のファイルパスと一致しないならば以下の処理を行う。
+   {
+    output.push( '<div style="margin-top: 8px; padding-left: 8px; background-color: #2e2e2e">', filePath, '</div>' );
+   }
+
+   previousFilePath = filePath;
+
+   if( fileSelectionStatusList[i] === true )
+   {
+    output.push(
+     '<div style="margin: 0 auto; margin: 0 auto; float: left" onclick="changeSelectionStatus(', i, ')">',
+     '<div style="margin: 0 auto; margin: 0 auto; position: relative; top: 2px; left: 2px; border-radius: 25%; height: 16px; width: 16px; background-color: #808080">',
+     '<div id="selectButtonOfMusic', i, '" style="margin: 0 auto; position: relative; top: 4px; border-radius: 25%; height: 8px; width: 8px; background-color: #eeeeee">',
+     '</div></div></div>' );
+
+    output.push(
+     '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+     fileNameList[i],
+     '</div>' );
+   }else
+   {
+    output.push(
+     '<div style="margin: 0 auto; margin: 0 auto; float: left" onclick="changeSelectionStatus(', i, ')">',
+     '<div style="margin: 0 auto; margin: 0 auto; position: relative; top: 2px; left: 2px; border-radius: 25%; height: 16px; width: 16px; background-color: #808080">',
+     '<div id="selectButtonOfMusic', i, '" style="margin: 0 auto; position: relative; top: 4px; border-radius: 25%; height: 8px; width: 8px; background-color: #4e4e4e">',
+     '</div></div></div>' );
+
+    output.push(
+     '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+     fileNameList[i],
+     '</div>' );
+   }
+  }
+ }
+
+ // 選択したファイル名のラジオ ボタンのリストを表示させる。
+ document.getElementById( 'listOfInputMusicFile' ).innerHTML = output.join( '' );
+
+ let divElementOfButtonToSelectMusic = null;
+ if( checkboxToHideUnselectedMusic[0].checked === true )
+ // 非選択項目を隠すチェックボックスにチェック マークが入ったならば以下の処理を行う。
+ {
+  // 一番上の楽曲を選択状態にして置く。
+  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + 0 );
+  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+
+  musicNumberCurrentlyPlayingInWhole = 0;
+  musicNumberCurrentlyPlayingInSelected = 0;
+ }else
+ // 非選択項目を隠すチェックボックスにチェック マークが無くなったならば以下の処理を行う。
+ {
+  // 再生中の楽曲を選択状態にして置く。
+  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+ }
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// 音楽のプレイリストの書き出しを実行する為の関数を宣言する。
+function exportPlaylist()
+{
+ let filePathList = [];
+ let textData = '';
+ let i = 0;
+ for( let i = 0; i < numberOfWholeFile; i++ )
+ {
+  filePathList.push( fileList[i] + '\n' );
+
+  if( fileSelectionStatusList[i] === true )
+  {
+   filePathList.push( '[/1/]\n' );
+  }else
+  {
+   filePathList.push( '[/0/]\n' );
+  }
+ }
+
+ textData = filePathList.join( "" );
+
+ let blob = new Blob( [textData], {type: 'text/plain'} );
+
+ let anchor = document.createElement( 'a' );
+ divElementOfUnderArea.appendChild( anchor );
+
+ anchor.href = URL.createObjectURL( blob );
+ anchor.download = 'Playlist.txt';
+ anchor.click();
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// 楽曲の選択状態の変更を処理する為の関数を宣言する。
+let timerToSavePlaylist = null;
+function changeSelectionStatus( itemNumber )
+{
+ if( timerToSavePlaylist !== null )
+ // プレイリストを保存する関数を呼び出すタイマーが稼働中であるならばタイマーを停止させる。
+ {
+  clearTimeout( timerToSavePlaylist );
+ }
+
+ let divElementOfButtonToSelectMusic = document.getElementById( 'selectButtonOfMusic' + itemNumber );
+
+ // ボタンの色を変更し、ファイルの選択状態を記録したリストを更新する。
+ if( fileSelectionStatusList[itemNumber] === false )
+ {
+  divElementOfButtonToSelectMusic.style['background-color'] = '#eeeeee';
+
+  if( itemNumber < listOfCheckedFileNumberToAllFileNumber[musicNumberCurrentlyPlayingInSelected] )
+  {
+   musicNumberCurrentlyPlayingInSelected++;
+  }
+
+  fileSelectionStatusList[itemNumber] = true;
+ }else
+ {
+  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+
+  if( itemNumber <= listOfCheckedFileNumberToAllFileNumber[musicNumberCurrentlyPlayingInSelected] )
+  {
+   musicNumberCurrentlyPlayingInSelected--;
+  }
+
+  fileSelectionStatusList[itemNumber] = false;
+ }
+
+ for( i = 0, j = 0; i < numberOfWholeFile; i++ )
+ {
+  if( fileSelectionStatusList[i] === true )
+  {
+   listOfCheckedFileNumberToAllFileNumber[j] = i;
+   j++;
+  }
+ }
+ numberOfSelectedFile = j;
+
+ // 指定時間経過後にプレイリストを保存する。
+ timerToSavePlaylist = setTimeout( function(){savePlaylist();}, 4000 );
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// 音楽のプレイリストのWeb Storage APIによる保存を行う為の関数を宣言する。
+function savePlaylist()
+{
+ let filePathList = [];
+ let textData = '';
+ let i = 0;
+ let j = 0;
+ for( i = 0, j = 0; i < numberOfWholeFile; i++ )
+ {
+  filePathList.push( fileList[i] + '\n' );
+
+  if( fileSelectionStatusList[i] === true )
+  {
+   filePathList.push( '[/1/]\n' );
+  }else
+  {
+   fileSelectionStatusList[i] = false;
+   filePathList.push( '[/0/]\n' );
+  }
+ }
+
+ textData = filePathList.join( "" );
+ 
+ let webStorage = localStorage;
+
+ webStorage.setItem( 'playlist', textData );
+
+ //webStorage.removeItem( 'playlist' );
+
+ // ローカル ストレージに保存されている全てのデータを削除する。
+ //webStorage.clear();
+}
+
+
+///////////////////////////////////////////////////////
+
+
+// 音楽のプレイリストのWeb Storage APIによる読み込みを行う為の関数を宣言する。
+function loadPlaylist()
+{
+ let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+
+ let filePathList = [];
+ let textData = ''; 
+ let webStorage = localStorage;
+
+ textData = webStorage.getItem( 'playlist' );
+
+ let maximumOfNumberOfTextData = 0;
+
+ if( textData !== null )
+ {
+  textData = textData.split( '\n' )
+  maximumOfNumberOfTextData = textData.length * 2;
+ }
+
+ let divElementOfButtonToSelectMusic = null;
+ let i = 0;
+ let j = 0;
+ let k = 0;
+ for( i = 0, k = 0; i < numberOfWholeFile; i++ )
+ {
+  // 一旦選択状態にして置く。
+  fileSelectionStatusList[i] = true;
+
+  for( j = 0; j < maximumOfNumberOfTextData; j += 2 )
+  // 一致する文字列を探索する。
+  {
+   if( fileList[i] === textData[j] )
+   // 文字列が完全に一致したならば以下の処理を行う。
+   {
+    divElementOfButtonToSelectMusic = document.getElementById( 'selectButtonOfMusic' + i );
+    if( textData[j + 1] === '[/1/]' )
+    {
+     fileSelectionStatusList[i] = true;
+     if( checkboxToHideUnselectedMusic[0].checked === false )
+     // 非選択項目が隠されていないならば以下の処理を行う。
+     {
+      divElementOfButtonToSelectMusic.style['background-color'] = '#eeeeee';
+     }
+    }else
+    {
+     if( checkboxToHideUnselectedMusic[0].checked === false )
+     // 非選択項目が隠されていないならば以下の処理を行う。
+     {
+      divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
+     }
+     fileSelectionStatusList[i] = false;
+    }
+   }
+  }
+
+  if( fileSelectionStatusList[i] === true )
+  {
+   listOfCheckedFileNumberToAllFileNumber[k] = i;
+   k++;
+  }
+ }
+
+ numberOfSelectedFile = k;
+}
+
+
+///////////////////////////////////////////////////////
+
+
+document.addEventListener( 'visibilitychange', toggleCanvasPlayOrPaused, false );
+// 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+
+
+///////////////////////////////////////////////////////
+
+
+window['toggleCanvasPlayOrStop'] = toggleCanvasPlayOrStop;
+window['toggleCanvasPlayOrPaused'] = toggleCanvasPlayOrPaused;
+window['canvasTerminate'] = canvasTerminate;
+window['canvasStart'] = canvasStart;
+window['abortLoading'] = abortLoading;
+window['toggleMusicPlayOrStop'] = toggleMusicPlayOrStop;
+window['changeMusic'] = changeMusic;
+window['changeMusicVolume'] = changeMusicVolume;
+window['changeToNextMusic'] = changeToNextMusic;
+window['checkOptionOfPlayingRandomSound'] = checkOptionOfPlayingRandomSound;
+window['scrollToItem'] = scrollToItem;
+window['hideUnselectedMusic'] = hideUnselectedMusic;
+window['exportPlaylist'] = exportPlaylist;
+window['changeSelectionStatus'] = changeSelectionStatus;
+window['savePlaylist'] = savePlaylist;
+window['loadPlaylist'] = loadPlaylist;
+
+
+///////////////////////////////////////////////////////
+
+
+} // モジュール全体のスコープの終わり。
+new globalObjectOfThisProgram(); // コンストラクターを実行する。
+
+
+</script>
+</body>
+</html>
