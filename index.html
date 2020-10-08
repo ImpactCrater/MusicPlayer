@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Web Music Player with Visualizer</title>
 </head>
-<body style="background-color: #282828; color: #cccccc">
+<body>
 
 <style type="text/css">
 span.inlineBlock
@@ -12,7 +12,7 @@ span.inlineBlock
  display: inline-block;
 }
 </style>
-<div id="areaOfcanvas1" style="font-size: 80%; text-align: center">
+<div id="areaOfcanvas1" style="font-size: 90%; text-align: center">
 
 <div id="displayAreaOfMusicTitle1"
  style="margin: 0 auto; margin-bottom: 2px;
@@ -143,40 +143,6 @@ Import Playlist:
 </div>
 </div>
 
-<br />
-<div id = "description1" style = "text-align: left; max-width: 720px; margin: 0 auto; font-size: 80%">
-<strong>キーボード演奏</strong>が可能で<strong>ヴィジュアライザー</strong>の機能が付いた<strong>音楽再生ウェブ アプリケーション</strong>です。<br />
-<br />
-[手順: 1]<br />
-" <span style="color:#4080CE;"><strong>Canvas Play / Stop</strong></span> " ボタンを押して下さい。<br />
-<br />
-[手順: 2]<br />
-フォルダーを選択する為のボタンを押して、現れたウィンドウから<span style="color:#4080CE;"><strong>音楽ファイルが入っているフォルダー</strong></span> (ディレクトリー)を選択して下さい。<br />
-この時、選択の為のウィンドウには、 " 開く " などの代わりに、 " アップロード " などと書かれたボタンがあるかもしれませんが、これを押して下さい。決して実際にインターネットにアップロードされたりは致しませんので御安心下さいませ。<br />
-<br />
-[手順: 3]<br />
-" <span style="color:#4080CE;"><strong>Music Play / Stop</strong></span> " ボタンを押して下さい。<br />
-<br />
-すると、音楽の再生と共にスペクトラム アナライザーや音楽のアクセントに連動する花火のようなエフェクトのヴィジュアライザーが動作致します。<br />
-後は、Canvas上を沢山クリック / タップしてみて下さい。<br />
-また、<span style="color:#4080CE;"><strong>キーボードのキーを押してピアノのように音楽を演奏する</strong></span>事も出来ます。<br />
-オクターヴの移動も可能です。<br />
-<span style="color:#4080CE;"><strong>プレイリスト</strong></span>は " <strong>Web Storage API</strong> " で自動保存致します。プレイリストをテキスト ファイルとして書き出しと取り込みも出来ます。<br />
-尚、古いブラウザーや性能が低い端末では動作しなかったりするかと思います。<br />
-<span style="color:#CE4C4C;">もしも何か問題が生じても私は責任を取れませんので御了承下さいませ。</span><br />
-<br />
-[このプログラムについて]<br />
-動作デモ ページ: <a href="https://impactcrater.github.io/MusicPlayer" target="_blank">https://impactcrater.github.io/MusicPlayer</a>
-<br />
-ソースコード: <a href="https://github.com/ImpactCrater/MusicPlayer" target="_blank">https://github.com/ImpactCrater/MusicPlayer</a>
-<br />
-" <strong>HTML5</strong> " の " <strong>Canvas</strong> " 要素を利用して画面の描画をしております。<br />
-このプログラムのコードは全てブログ記事のHTML文書内に " <strong>JavaScript</strong> " で記述したものであり、作成するに当たってテキスト エディターとウェブ ブラウザー以外は何も使用しておりません。<br />
-追加のライブラリーなどは一切使用せず、純粋にHTML5対応ブラウザーだけで動作致します。<br />
-音に関しては、 " <strong>Web Audio API</strong> " を利用して、独自の関数で波形を作って鳴らしております。<br />
-フォルダーの選択に " HTMLInputElement.webkitDirectory " という未だ標準化されていない機能を利用している為、動作環境は限られます。 " Firefox 54 " 以降では動作確認済みです。<br />
-<br />
-</div>
 <script type="text/javascript">
 
 
@@ -1339,8 +1305,8 @@ setSound.prototype.playMusic = function()
   if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null && instanceOfSetSound.isMusicBeingOutput === true )
   // 曲の再生中であるならば以下の処理を行う。
   {
-   // 曲の再生を終了させる。
-   instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( 0 );
+   // 再生していた音楽を停止させる。
+   instanceOfSetSound.stopMusic();
   }
 
   // AudioBufferSourceNodeを取得する。
@@ -1507,10 +1473,10 @@ setSound.prototype.stopMusic = function()
  // 値は現在値との相対値である。
  // 'setValueAtTime' 等のメソッドで初期値を設定してからでないと 'linearRampToValueAtTime' でゲインを滑らかに変更出来ない。
  this.gainNodeForMusicPlayback.gain.setValueAtTime( this.musicPlaybackGain, 0 );
- this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 1 );
+ this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 0.5 );
 
  // 音楽の再生を停止する。
- instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( currentTime + 2 );
+ instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( currentTime + 0.6 );
 };
 
 
@@ -1807,13 +1773,19 @@ interactiveCanvas.prototype.displayCanvas = function()
    canvasLayerContextForTemporaryUse.clearRect( 0, 0, widthOfCanvasContext, heightOfCanvasContext ); // Canvas レイヤーのコンテキストの内容を消去する。
    canvasLayerContextForTemporaryUse.drawImage( canvasLayerForVisualizerOfSpectrumAnalyser, 0, 0 ); // スペクトラム アナライザーを描画する。
    canvasLayerContextForTemporaryUse.drawImage( canvasLayerForVisualEffect, 0, 0 ); // 視覚効果を描画する。
+   canvasContext.globalCompositeOperation = "lighter";
    canvasContext.drawImage( canvasLayerForTemporaryUse, 0, 0 ); // 実際に画面上に表示されるCanvas要素のコンテキストに対してオフスクリーン描画用のCanvas要素の内容を転写する。
+   canvasContext.globalCompositeOperation = "source-over";
  }else if( isSpectrumVisualizerEmpty === false && isVisualEffectEmpty === true )
  {
+   canvasContext.globalCompositeOperation = "lighter";
    canvasContext.drawImage( canvasLayerForVisualizerOfSpectrumAnalyser, 0, 0 ); // スペクトラム アナライザーを描画する。
+   canvasContext.globalCompositeOperation = "source-over";
  }else if( isSpectrumVisualizerEmpty === true && isVisualEffectEmpty === false )
  {
+   canvasContext.globalCompositeOperation = "lighter";
    canvasContext.drawImage( canvasLayerForVisualEffect, 0, 0 ); // 視覚効果を描画する。
+   canvasContext.globalCompositeOperation = "source-over";
  }
 };
 
@@ -2308,7 +2280,7 @@ interactiveCanvas.prototype.processKeyUpEvent = function( event )
 // 画面を徐々に消して行く為のプロトタイプのメソッドを定義する。
 interactiveCanvas.prototype.colorBackground = function()
 {
- instanceOfInteractiveCanvas.hueOfBackground += Math.random() * 3; // 色相に僅かな揺らぎのある変化を与える。
+ instanceOfInteractiveCanvas.hueOfBackground += Math.random() * 2; // 色相に僅かな揺らぎのある変化を与える。
  if( instanceOfInteractiveCanvas.hueOfBackground > 360 )
  {
   instanceOfInteractiveCanvas.hueOfBackground -= 360;
@@ -2621,15 +2593,15 @@ interactiveCanvas.prototype.startTimerForProcessingVisualEffect = function()
  let hueOfLightParticle = lightParticleHue[countOfTimerForProcessingVisualEffect];
  radialGradient.addColorStop( 0.0, 'hsla( ' + hueOfLightParticle + ', 100%, 98%, 1.00 )' ); // 開始円の色を設定する。
  radialGradient.addColorStop( 0.1, 'hsla( ' + hueOfLightParticle + ', 100%, 85%, 1.00 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.2, 'hsla( ' + hueOfLightParticle + ', 100%, 65%, 0.98 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.3, 'hsla( ' + hueOfLightParticle + ', 100%, 55%, 0.50 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.4, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.40 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.5, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.30 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.6, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.20 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.7, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.14 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.8, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.08 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.9, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.04 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 1.0, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.00 )' ); // 終了点の色を設定する。
+ radialGradient.addColorStop( 0.2, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.98 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.3, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.65 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.4, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.55 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.5, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.40 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.6, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.30 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.7, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.20 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.8, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.10 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.9, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.05 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 1.0, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.00 )' ); // 終了点の色を設定する。
 
  canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].save(); // 描画設定を保存する。
  canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].clearRect(
@@ -2987,9 +2959,9 @@ interactiveCanvas.prototype.drawVisualEffect = function()
 
 
 let integratedValueOfChangeAmountLeft = [];
+let integratedValueOfChangeAmountRight = [];
 let pastValueOfSpectrumLeft = [];
 let pastValueOfSpectrumRight = [];
-let integratedValueOfChangeAmountRight = [];
 let integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
 let integratedValueOfAllOfFrequencyChangeAmountRight = 0;
 let pastValueOfIntegratedValueOfChangeAmountLeft = [];
@@ -3005,10 +2977,9 @@ let spectrumVisualizer = function()
  this.wasProcessingExcutedLastTime = false;
  this.isAttackVisualizerEnable = true;
 
- this.numberOfLowerCutOff = 0;
  this.numberOfUpperCutOff = 4;
  this.limitOfCount = instanceOfSetSound.sizeOfFFT / 2 - this.numberOfUpperCutOff;
- this.numberOfBar = this.limitOfCount - this.numberOfLowerCutOff;
+ this.numberOfBar = this.limitOfCount
  this.intervalOfBar = widthOfCanvasContext / 2 / this.numberOfBar;
  this.widthOfBar = this.intervalOfBar * 0.9;
 };
@@ -3035,7 +3006,7 @@ spectrumVisualizer.prototype.startTimerForDrawingSpectrum = function()
    integratedValueOfChangeAmountRight[i] = 0;
    pastValueOfIntegratedValueOfChangeAmountLeft[i] = 0;
    pastValueOfIntegratedValueOfChangeAmountRight[i] = 0;
-   coefficientValue[i] = 192 / (i / limitOfCount + 0.005);
+   coefficientValue[i] = limitOfCount / (i / limitOfCount + 0.002);
   }
 
   integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
@@ -3069,12 +3040,11 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  let saturationOfBar = 100;
  let defaultLightnessOfBar = 4;
  let lightnessOfBar = defaultLightnessOfBar;
- let numberOfLowerCutOff = instanceOfSpectrumVisualizer.numberOfLowerCutOff;
  let numberOfUpperCutOff = instanceOfSpectrumVisualizer.numberOfUpperCutOff;
  let numberOfBar = instanceOfSpectrumVisualizer.numberOfBar;
  let intervalOfBar = instanceOfSpectrumVisualizer.intervalOfBar;
  let widthOfBar = instanceOfSpectrumVisualizer.widthOfBar;
- let maxLengthOfBar = heightOfCanvasContext * 0.4 * (Math.pow( instanceOfSetSound.musicPlaybackGain - 1, 3 ) + 1);
+ let maxLengthOfBar = heightOfCanvasContext * 0.3 * (Math.pow( instanceOfSetSound.musicPlaybackGain - 1, 3 ) + 1);
 
 
  // Canvas画面を初期化する。
@@ -3105,21 +3075,23 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  // 垂直方向のグラデーションを付ける。
  let hueOfGradient = standardHueOfBar;
  let linearGradient = canvasLayerContextForVisualizerOfSpectrumAnalyser.createLinearGradient( 0, heightOfCanvasContext, 0, heightOfCanvasContext - maxLengthOfBar );
- linearGradient.addColorStop( 0.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 0 + '%,' + 0.00 + ')' );
- hueOfGradient -= 20;
- linearGradient.addColorStop( 0.25, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 30 + '%,' + 0.30 + ')' );
- hueOfGradient -= 20;
- linearGradient.addColorStop( 0.50, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 60 + '%,' + 0.60 + ')' );
- hueOfGradient -= 20;
- linearGradient.addColorStop( 0.75, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 80 + '%,' + 0.80 + ')' );
- hueOfGradient -= 20;
- linearGradient.addColorStop( 1.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 90 + '%,' + 0.90 + ')' );
+ linearGradient.addColorStop( 0.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.00 + ')' );
+ hueOfGradient -= 5;
+ linearGradient.addColorStop( 0.20, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.25 + ')' );
+ hueOfGradient -= 5;
+ linearGradient.addColorStop( 0.40, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.50 + ')' );
+ hueOfGradient -= 5;
+ linearGradient.addColorStop( 0.60, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.60 + ')' );
+ hueOfGradient -= 5;
+ linearGradient.addColorStop( 0.80, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.70 + ')' );
+ hueOfGradient -= 5;
+ linearGradient.addColorStop( 1.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.80 + ')' );
 
 
  let amountOfSubtraction = 0;
  let i = 0;
  let limitOfCount = instanceOfSpectrumVisualizer.limitOfCount;
- for( i = numberOfLowerCutOff; i < limitOfCount; i++ )
+ for( i = 0; i < limitOfCount; i++ )
  {
   if( spectrumLeft[i] !== -Infinity )
   {
@@ -3163,26 +3135,29 @@ spectrumVisualizer.prototype.drawSpectrum = function()
   }
 
 
-  // 前回の積算値よりも今回の積算値の方が値が増加したならば、全ての周波数帯についての増加分を合算して行く。
-
+  // 全ての周波数帯についての増加分を合算して行く。
   // 低周波領域ほど値を大きくする。
-  if( integratedValueOfChangeAmountLeft[i] - pastValueOfIntegratedValueOfChangeAmountLeft[i] > 0 )
-  {
-   integratedValueOfAllOfFrequencyChangeAmountLeft
-    += (integratedValueOfChangeAmountLeft[i] - pastValueOfIntegratedValueOfChangeAmountLeft[i]) * coefficientValue[i];
-  }
 
-  if( integratedValueOfChangeAmountRight[i] - pastValueOfIntegratedValueOfChangeAmountRight[i] > 0 )
-  {
-   integratedValueOfAllOfFrequencyChangeAmountRight
-    += (integratedValueOfChangeAmountRight[i] - pastValueOfIntegratedValueOfChangeAmountRight[i]) * coefficientValue[i];
-  }
+  integratedValueOfAllOfFrequencyChangeAmountLeft
+   += (integratedValueOfChangeAmountLeft[i] - pastValueOfIntegratedValueOfChangeAmountLeft[i]) * coefficientValue[i];
+
+  integratedValueOfAllOfFrequencyChangeAmountRight
+   += (integratedValueOfChangeAmountRight[i] - pastValueOfIntegratedValueOfChangeAmountRight[i]) * coefficientValue[i];
 
 
   // 値を記憶させる。
   pastValueOfIntegratedValueOfChangeAmountLeft[i] = integratedValueOfChangeAmountLeft[i];
   pastValueOfIntegratedValueOfChangeAmountRight[i] = integratedValueOfChangeAmountRight[i];
+ }
 
+
+ // 低音のアタックによるメーターの伸縮の倍率を設定する。
+ let multiplierLeft = maxLengthOfBar * (Math.tanh(integratedValueOfChangeAmountLeft[0] * 12) * 1.0 + 1);
+ let multiplierRight = maxLengthOfBar * (Math.tanh(integratedValueOfChangeAmountRight[0] * 12) * 1.0 + 1);
+
+
+ for( i = 0; i < limitOfCount; i++ )
+ {
   // 左チャンネルのメーターを描画する。
 
   amountOfSubtractionOfHueOfBar = integratedValueOfChangeAmountLeft[i] * 140;
@@ -3212,11 +3187,9 @@ spectrumVisualizer.prototype.drawSpectrum = function()
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = 'hsl( ' + hueOfBar + ', ' + saturationOfBar + '%, ' + lightnessOfBar + '% )';
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   (i - numberOfLowerCutOff) * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * maxLengthOfBar,
+   i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * multiplierLeft,
    widthOfBar, heightOfCanvasContext );
   // 描画する。
-
-  integratedValueOfChangeAmountLeft[i] *= 0.92;
 
   // 値を記憶させる。
   pastValueOfSpectrumLeft[i] = normalizedSpectrumLeft[i];
@@ -3251,11 +3224,9 @@ spectrumVisualizer.prototype.drawSpectrum = function()
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = 'hsl( ' + hueOfBar + ', ' + saturationOfBar + '%, ' + lightnessOfBar + '% )';
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   widthOfCanvasContext - (i - numberOfLowerCutOff) * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * maxLengthOfBar,
+   widthOfCanvasContext - i * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * multiplierRight,
    widthOfBar, heightOfCanvasContext );
   // 描画する。
-
-  integratedValueOfChangeAmountRight[i] *= 0.92;
 
   // 値を記憶させる。
   pastValueOfSpectrumRight[i] = normalizedSpectrumRight[i];
@@ -3263,18 +3234,21 @@ spectrumVisualizer.prototype.drawSpectrum = function()
 
 
  canvasLayerContextForVisualizerOfSpectrumAnalyser.globalCompositeOperation = "lighter";
- for( i = numberOfLowerCutOff; i < limitOfCount; i++ )
+ for( i = 0; i < limitOfCount; i++ )
  {
   // メーターにグラデーションを付ける。
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = linearGradient;
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   (i - numberOfLowerCutOff) * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * maxLengthOfBar,
+   i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * multiplierLeft,
    widthOfBar, heightOfCanvasContext );
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   widthOfCanvasContext - (i - numberOfLowerCutOff) * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * maxLengthOfBar,
+   widthOfCanvasContext - i * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * multiplierRight,
    widthOfBar, heightOfCanvasContext );
+
+  integratedValueOfChangeAmountLeft[i] *= 0.8;
+  integratedValueOfChangeAmountRight[i] *= 0.8;
  }
  canvasLayerContextForVisualizerOfSpectrumAnalyser.globalCompositeOperation = "source-over";
 
@@ -3702,8 +3676,8 @@ function changeToNextMusic()
    // 曲の再生を終了させて次の楽曲を再生する。
    if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null )
    {
-    // 曲の再生を終了させる。
-    instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( 0 );
+    // 再生していた音楽を停止させる。
+    instanceOfSetSound.stopMusic();
    }
   }
  }
