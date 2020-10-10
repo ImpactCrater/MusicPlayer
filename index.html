@@ -1468,7 +1468,7 @@ setSound.prototype.outputMusic = function()
  this.analyserNodeRight.smoothingTimeConstant = this.smoothingTimeConstant;
 
  // AudioBufferSourceNodeをGainNodeに接続する
- instanceOfSetSound.audioBufferSourceNodeOfAudioFile.connect( this.gainNodeForMusicPlayback );
+ this.audioBufferSourceNodeOfAudioFile.connect( this.gainNodeForMusicPlayback );
 
  // GainNodeをChannelSplitterNodeに接続する。
  this.gainNodeForMusicPlayback.connect( this.channelSplitterNode );
@@ -1485,15 +1485,18 @@ setSound.prototype.outputMusic = function()
  this.gainNodeForMusicPlayback.gain.setValueAtTime( this.musicPlaybackGain, 0 );
 
  // 音楽の再生を開始する。
- instanceOfSetSound.isMusicBeingOutput = true;
- instanceOfSetSound.audioBufferSourceNodeOfAudioFile.start( 0 );
+ this.isMusicBeingOutput = true;
+ this.audioBufferSourceNodeOfAudioFile.start( 0 );
 
 
  // 画面にスペクトラム アナライザーを表示する。
+
  if( instanceOfSpectrumVisualizer === null )
  {
   instanceOfSpectrumVisualizer = new spectrumVisualizer();
  }
+
+ // スペクトラム アナライザーの処理を開始する。
  instanceOfSpectrumVisualizer.startTimerForDrawingSpectrum();
 };
 
@@ -1506,10 +1509,10 @@ setSound.prototype.stopMusic = function()
  // 値は現在値との相対値である。
  // 'setValueAtTime' 等のメソッドで初期値を設定してからでないと 'linearRampToValueAtTime' でゲインを滑らかに変更出来ない。
  this.gainNodeForMusicPlayback.gain.setValueAtTime( this.musicPlaybackGain, 0 );
- this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 0.5 );
+ this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 0.4 );
 
- // 音楽の再生を停止する。
- instanceOfSetSound.audioBufferSourceNodeOfAudioFile.stop( currentTime + 0.6 );
+ // 音の再生を停止する。
+ this.audioBufferSourceNodeOfAudioFile.stop( currentTime + 1.6 );
 };
 
 
@@ -2626,15 +2629,15 @@ interactiveCanvas.prototype.startTimerForProcessingVisualEffect = function()
  let hueOfLightParticle = lightParticleHue[countOfTimerForProcessingVisualEffect];
  radialGradient.addColorStop( 0.0, 'hsla( ' + hueOfLightParticle + ', 100%, 98%, 1.00 )' ); // 開始円の色を設定する。
  radialGradient.addColorStop( 0.1, 'hsla( ' + hueOfLightParticle + ', 100%, 85%, 1.00 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.2, 'hsla( ' + hueOfLightParticle + ', 100%, 50%, 0.98 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.3, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.65 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.4, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.55 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.5, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.40 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.6, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.30 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.7, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.20 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.8, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.10 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 0.9, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.05 )' ); // 中間点の位置と色を設定する。
- radialGradient.addColorStop( 1.0, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 0.00 )' ); // 終了点の色を設定する。
+ radialGradient.addColorStop( 0.2, 'hsla( ' + hueOfLightParticle + ', 100%, 32%, 1.00 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.3, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.80 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.4, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.60 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.5, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.40 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.6, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.30 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.7, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.20 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.8, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.10 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 0.9, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.05 )' ); // 中間点の位置と色を設定する。
+ radialGradient.addColorStop( 1.0, 'hsla( ' + hueOfLightParticle + ', 100%, 25%, 0.00 )' ); // 終了点の色を設定する。
 
  canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].save(); // 描画設定を保存する。
  canvasLayerContextForDrawingParticleInAdvance[countOfTimerForProcessingVisualEffect].clearRect(
@@ -2997,8 +3000,6 @@ let pastValueOfSpectrumLeft = [];
 let pastValueOfSpectrumRight = [];
 let integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
 let integratedValueOfAllOfFrequencyChangeAmountRight = 0;
-let pastValueOfIntegratedValueOfChangeAmountLeft = [];
-let pastValueOfIntegratedValueOfChangeAmountRight = [];
 
 // 音楽のスペクトラム アナライザーを描画するコンストラクターを関数式により定義する。
 /** @constructor */ 
@@ -3017,6 +3018,31 @@ let spectrumVisualizer = function()
  this.widthOfBar = this.intervalOfBar * 0.9;
 };
 
+// 音楽のスペクトラム アナライザーを初期化する為のプロトタイプのメソッドを定義する。
+spectrumVisualizer.prototype.initializeSpectrum = function()
+{
+ // 初期化を行う。
+ spectrumLeft = new Float32Array( instanceOfSetSound.analyserNodeLeft.frequencyBinCount );
+ spectrumRight = new Float32Array( instanceOfSetSound.analyserNodeRight.frequencyBinCount );
+
+ instanceOfSpectrumVisualizer.wasProcessingExcutedLastTime = false;
+ let i = 0;
+ let limitOfCount = instanceOfSpectrumVisualizer.limitOfCount;
+ for( i = 0; i < limitOfCount; i++ )
+ {
+  normalizedSpectrumLeft[i] = 0;
+  normalizedSpectrumRight[i] = 0;
+  pastValueOfSpectrumLeft[i] = 0;
+  pastValueOfSpectrumRight[i] = 0;
+  integratedValueOfChangeAmountLeft[i] = 0;
+  integratedValueOfChangeAmountRight[i] = 0;
+  coefficientValue[i] = 1 / (Math.pow((i - 2) / 128, 2) + 0.0005);
+ }
+
+ integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
+ integratedValueOfAllOfFrequencyChangeAmountRight = 0;
+};
+
 // 音楽のスペクトラム アナライザーの描画を開始する為のプロトタイプのメソッドを定義する。
 spectrumVisualizer.prototype.startTimerForDrawingSpectrum = function()
 {
@@ -3024,27 +3050,9 @@ spectrumVisualizer.prototype.startTimerForDrawingSpectrum = function()
  // もし未だ描画を開始していないならば以下の処理を行う。
  {
   // 初期化を行う。
+  instanceOfSpectrumVisualizer.initializeSpectrum();
 
-  spectrumLeft = new Float32Array( instanceOfSetSound.analyserNodeLeft.frequencyBinCount );
-  spectrumRight = new Float32Array( instanceOfSetSound.analyserNodeRight.frequencyBinCount );
-
-  instanceOfSpectrumVisualizer.wasProcessingExcutedLastTime = false;
-  let i = 0;
-  let limitOfCount = instanceOfSpectrumVisualizer.limitOfCount;
-  for( i = 0; i < limitOfCount; i++ )
-  {
-   pastValueOfSpectrumLeft[i] = 0;
-   pastValueOfSpectrumRight[i] = 0;
-   integratedValueOfChangeAmountLeft[i] = 0;
-   integratedValueOfChangeAmountRight[i] = 0;
-   pastValueOfIntegratedValueOfChangeAmountLeft[i] = 0;
-   pastValueOfIntegratedValueOfChangeAmountRight[i] = 0;
-   coefficientValue[i] = limitOfCount / (i / limitOfCount + 0.002);
-  }
-
-  integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
-  integratedValueOfAllOfFrequencyChangeAmountRight = 0;
-
+  // 処理と描画を開始する。
   let thisSpectrumVisualizer = this;
   instanceOfSpectrumVisualizer.drawSpectrum(); // 1回だけ即時実行する。
   instanceOfSpectrumVisualizer.timerForDrawingSpectrum = setInterval( function(){thisSpectrumVisualizer.drawSpectrum();}, 40 ); // タイマーによるインターヴァル動作で色彩豊かな波を描画する関数を実行する。
@@ -3069,15 +3077,16 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  instanceOfSetSound.analyserNodeRight.getFloatFrequencyData( spectrumRight );
  let maxDecibels = - 12;
  let range = 108;
+ let maximumChangeAmountLeft
  let hueOfBar = 0;
  let saturationOfBar = 100;
- let defaultLightnessOfBar = 4;
+ let defaultLightnessOfBar = 32;
+ let minimumLightnessOfBar = 4;
  let lightnessOfBar = defaultLightnessOfBar;
- let numberOfUpperCutOff = instanceOfSpectrumVisualizer.numberOfUpperCutOff;
  let numberOfBar = instanceOfSpectrumVisualizer.numberOfBar;
  let intervalOfBar = instanceOfSpectrumVisualizer.intervalOfBar;
  let widthOfBar = instanceOfSpectrumVisualizer.widthOfBar;
- let maxLengthOfBar = heightOfCanvasContext * 0.3 * (Math.pow( instanceOfSetSound.musicPlaybackGain - 1, 3 ) + 1);
+ let maxLengthOfBar = heightOfCanvasContext * 0.32 * (Math.pow( instanceOfSetSound.musicPlaybackGain - 1, 3 ) + 1);
 
 
  // Canvas画面を初期化する。
@@ -3090,8 +3099,6 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  integratedValueOfAllOfFrequencyChangeAmountLeft = 0;
  integratedValueOfAllOfFrequencyChangeAmountRight = 0;
 
- let changeAmountLeft = 0;
- let changeAmountRight = 0;
  let additionalAmountLeft = 0;
  let additionalAmountRight = 0;
  let standardHueOfBar = 0;
@@ -3109,16 +3116,11 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  let hueOfGradient = standardHueOfBar;
  let linearGradient = canvasLayerContextForVisualizerOfSpectrumAnalyser.createLinearGradient( 0, heightOfCanvasContext, 0, heightOfCanvasContext - maxLengthOfBar );
  linearGradient.addColorStop( 0.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.00 + ')' );
- hueOfGradient -= 5;
- linearGradient.addColorStop( 0.20, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.25 + ')' );
- hueOfGradient -= 5;
- linearGradient.addColorStop( 0.40, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.50 + ')' );
- hueOfGradient -= 5;
- linearGradient.addColorStop( 0.60, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.60 + ')' );
- hueOfGradient -= 5;
- linearGradient.addColorStop( 0.80, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.70 + ')' );
- hueOfGradient -= 5;
- linearGradient.addColorStop( 1.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.80 + ')' );
+ linearGradient.addColorStop( 0.20, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.10 + ')' );
+ linearGradient.addColorStop( 0.40, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.20 + ')' );
+ linearGradient.addColorStop( 0.60, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.30 + ')' );
+ linearGradient.addColorStop( 0.80, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.40 + ')' );
+ linearGradient.addColorStop( 1.00, 'hsla( ' + hueOfGradient + ', ' + 100 + '%, ' + 50 + '%,' + 0.50 + ')' );
 
 
  let amountOfSubtraction = 0;
@@ -3151,47 +3153,27 @@ spectrumVisualizer.prototype.drawSpectrum = function()
   }
 
 
-  // 前回の値と今回の値との差分を取る。
-  changeAmountLeft = normalizedSpectrumLeft[i] - pastValueOfSpectrumLeft[i];
-  changeAmountRight = normalizedSpectrumRight[i] - pastValueOfSpectrumRight[i];
-
-  // 前回よりも値が増加したならば増加分を加算する。
-
-  if( changeAmountLeft > 0 )
-  {
-   integratedValueOfChangeAmountLeft[i] += changeAmountLeft;
-  }
-
-  if( changeAmountRight > 0 )
-  {
-   integratedValueOfChangeAmountRight[i] += changeAmountRight;
-  }
+  // 前回の値と今回の値との差分を加算する。
+  integratedValueOfChangeAmountLeft[i] += normalizedSpectrumLeft[i] - pastValueOfSpectrumLeft[i];
+  integratedValueOfChangeAmountRight[i] += normalizedSpectrumRight[i] - pastValueOfSpectrumRight[i];
 
 
-  // 全ての周波数帯についての増加分を合算して行く。
+  // 全ての周波数帯についての差分を合算して行く。
   // 低周波領域ほど値を大きくする。
 
   integratedValueOfAllOfFrequencyChangeAmountLeft
-   += (integratedValueOfChangeAmountLeft[i] - pastValueOfIntegratedValueOfChangeAmountLeft[i]) * coefficientValue[i];
+   += (normalizedSpectrumLeft[i] - pastValueOfSpectrumLeft[i]) * coefficientValue[i];
 
   integratedValueOfAllOfFrequencyChangeAmountRight
-   += (integratedValueOfChangeAmountRight[i] - pastValueOfIntegratedValueOfChangeAmountRight[i]) * coefficientValue[i];
-
-
-  // 値を記憶させる。
-  pastValueOfIntegratedValueOfChangeAmountLeft[i] = integratedValueOfChangeAmountLeft[i];
-  pastValueOfIntegratedValueOfChangeAmountRight[i] = integratedValueOfChangeAmountRight[i];
+   += (normalizedSpectrumLeft[i] - pastValueOfSpectrumLeft[i]) * coefficientValue[i];
  }
-
-
- // 低音のアタックによるメーターの伸縮の倍率を設定する。
- let multiplierLeft = maxLengthOfBar * (Math.tanh(integratedValueOfChangeAmountLeft[0] * 12) * 1.0 + 1);
- let multiplierRight = maxLengthOfBar * (Math.tanh(integratedValueOfChangeAmountRight[0] * 12) * 1.0 + 1);
 
 
  for( i = 0; i < limitOfCount; i++ )
  {
   // 左チャンネルのメーターを描画する。
+
+  integratedValueOfChangeAmountLeft[i] = Math.tanh( integratedValueOfChangeAmountLeft[i] );
 
   amountOfSubtractionOfHueOfBar = integratedValueOfChangeAmountLeft[i] * 140;
   if( amountOfSubtractionOfHueOfBar > 64 )
@@ -3205,7 +3187,7 @@ spectrumVisualizer.prototype.drawSpectrum = function()
    hueOfBar = 360 + hueOfBar;
   }
 
-  lightnessOfBar = defaultLightnessOfBar + normalizedSpectrumLeft[i] * 16 + integratedValueOfChangeAmountLeft[i] * 120;
+  lightnessOfBar = defaultLightnessOfBar + normalizedSpectrumLeft[i] * 8 + integratedValueOfChangeAmountLeft[i] * 160;
   if( lightnessOfBar > 100 )
   {
    lightnessOfBar = 100;
@@ -3213,14 +3195,14 @@ spectrumVisualizer.prototype.drawSpectrum = function()
 
   lightnessOfBar = - 0.009 * Math.pow( lightnessOfBar - 100, 2 ) + 80;
 
-  if( lightnessOfBar < defaultLightnessOfBar )
+  if( lightnessOfBar < minimumLightnessOfBar )
   {
-   lightnessOfBar = defaultLightnessOfBar;
+   lightnessOfBar = minimumLightnessOfBar;
   }
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = 'hsl( ' + hueOfBar + ', ' + saturationOfBar + '%, ' + lightnessOfBar + '% )';
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * multiplierLeft,
+   i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * (integratedValueOfChangeAmountLeft[i] * 2 + 1) * maxLengthOfBar,
    widthOfBar, heightOfCanvasContext );
   // 描画する。
 
@@ -3229,6 +3211,8 @@ spectrumVisualizer.prototype.drawSpectrum = function()
 
 
   // 右チャンネルのメーターを描画する。
+
+  integratedValueOfChangeAmountRight[i] = Math.tanh( integratedValueOfChangeAmountRight[i] );
 
   amountOfSubtractionOfHueOfBar = integratedValueOfChangeAmountRight[i] * 140;
   if( amountOfSubtractionOfHueOfBar > 64 )
@@ -3242,7 +3226,7 @@ spectrumVisualizer.prototype.drawSpectrum = function()
    hueOfBar = 360 + hueOfBar;
   }
 
-  lightnessOfBar = defaultLightnessOfBar + normalizedSpectrumRight[i] * 16 + integratedValueOfChangeAmountRight[i] * 120;
+  lightnessOfBar = defaultLightnessOfBar + normalizedSpectrumRight[i] * 8 + integratedValueOfChangeAmountRight[i] * 160;
   if( lightnessOfBar > 100 )
   {
    lightnessOfBar = 100;
@@ -3250,15 +3234,15 @@ spectrumVisualizer.prototype.drawSpectrum = function()
 
   lightnessOfBar = - 0.009 * Math.pow( lightnessOfBar - 100, 2 ) + 80;
 
-  if( lightnessOfBar < defaultLightnessOfBar )
+  if( lightnessOfBar < minimumLightnessOfBar )
   {
-   lightnessOfBar = defaultLightnessOfBar;
+   lightnessOfBar = minimumLightnessOfBar;
   }
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = 'hsl( ' + hueOfBar + ', ' + saturationOfBar + '%, ' + lightnessOfBar + '% )';
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   widthOfCanvasContext - i * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * multiplierRight,
-   widthOfBar, heightOfCanvasContext );
+   widthOfCanvasContext - i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * (integratedValueOfChangeAmountRight[i] * 2 + 1) * maxLengthOfBar,
+   - widthOfBar, heightOfCanvasContext );
   // 描画する。
 
   // 値を記憶させる。
@@ -3273,15 +3257,15 @@ spectrumVisualizer.prototype.drawSpectrum = function()
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillStyle = linearGradient;
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] * multiplierLeft,
+   i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumLeft[i] + (integratedValueOfChangeAmountLeft[i] * 2 + 1) * maxLengthOfBar,
    widthOfBar, heightOfCanvasContext );
 
   canvasLayerContextForVisualizerOfSpectrumAnalyser.fillRect(
-   widthOfCanvasContext - i * intervalOfBar - widthOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] * multiplierRight,
-   widthOfBar, heightOfCanvasContext );
+   widthOfCanvasContext - i * intervalOfBar, heightOfCanvasContext - normalizedSpectrumRight[i] + (integratedValueOfChangeAmountRight[i] * 2 + 1) * maxLengthOfBar,
+   - widthOfBar, heightOfCanvasContext );
 
-  integratedValueOfChangeAmountLeft[i] *= 0.8;
-  integratedValueOfChangeAmountRight[i] *= 0.8;
+  integratedValueOfChangeAmountLeft[i] *= 0.6;
+  integratedValueOfChangeAmountRight[i] *= 0.6;
  }
  canvasLayerContextForVisualizerOfSpectrumAnalyser.globalCompositeOperation = "source-over";
 
@@ -3292,7 +3276,7 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  {
   if( instanceOfInteractiveCanvas !== null )
   {
-   if( integratedValueOfAllOfFrequencyChangeAmountLeft > 2048 || integratedValueOfAllOfFrequencyChangeAmountRight > 2048 )
+   if( integratedValueOfAllOfFrequencyChangeAmountLeft > 128 || integratedValueOfAllOfFrequencyChangeAmountRight > 128 )
    {
     let playingMode = 'Auto';
     setTimeout( instanceOfInteractiveCanvas.processStartOfVisualEffect( playingMode ), 0 );
@@ -3302,14 +3286,13 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  }
 
  canvasLayerContextForVisualizerOfSpectrumAnalyser.restore(); // 描画の設定を元に戻す。
-
 };
 
 // 音楽のアタックの視覚化の処理を停止する為のプロトタイプのメソッドを定義する。
 spectrumVisualizer.prototype.disableAttackVisualizer = function()
 {
  instanceOfSpectrumVisualizer.isAttackVisualizerEnable = false;
- setTimeout( function(){instanceOfSpectrumVisualizer.isAttackVisualizerEnable = true}, 160 );
+ setTimeout( function(){instanceOfSpectrumVisualizer.isAttackVisualizerEnable = true}, 100 );
 };
 
 
@@ -3566,7 +3549,7 @@ function toggleMusicPlayOrStop()
   // 次の楽曲に変更するボタンを使用不可能にする。
   document.getElementById( 'buttounToChangeToNextMusic' ).disabled = true;
 
-   // 再生していた音を停止させる。
+   // 再生していた音楽を停止させる。
    instanceOfSetSound.stopMusic();
 
    // 音楽再生ボタンを使用不可能にする。
@@ -3664,8 +3647,8 @@ function changeMusic( itemNumber )
  {
   changeMusicNext = false;
 
-  // 音楽を再生させる。
-  instanceOfSetSound.playMusic();
+  // 音楽を停止させ、次の楽曲を再生させる。
+  instanceOfSetSound.stopMusic();
  }
 }
 
