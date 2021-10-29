@@ -12,7 +12,7 @@ span.inlineBlock
  display: inline-block;
 }
 </style>
-<div id="areaOfcanvas1" style="font-size: 80%; text-align: center">
+<div id="areaOfcanvas1" style="font-size: small; text-align: center">
 
 <div id="displayAreaOfMusicTitle1"
  style="margin: 0 auto; margin-bottom: 2px;
@@ -1640,15 +1640,16 @@ let startTimerToGetPositionOfPointer = function()
 
 startTimerToGetPositionOfPointer.prototype.getPositionOfPointer = function( event )
 {
- pointerCoordinate.clientX = event.clientX + window.pageXOffset;
- pointerCoordinate.clientY = event.clientY + window.pageYOffset;
- if( pointerCoordinate.clientX >= canvasContext.canvas.offsetLeft && pointerCoordinate.clientX <= canvasContext.canvas.offsetLeft + widthOfCanvasContext )
+ pointerCoordinate.clientX = event.clientX
+ pointerCoordinate.clientY = event.clientY
+ let clientRectOfCanvas = canvasElement.getBoundingClientRect();
+ if( pointerCoordinate.clientX >= clientRectOfCanvas.left && pointerCoordinate.clientX <= clientRectOfCanvas.left + widthOfCanvasContext )
  {
-  if( pointerCoordinate.clientY >= canvasContext.canvas.offsetTop && pointerCoordinate.clientY <= canvasContext.canvas.offsetTop + heightOfCanvasContext )
+  if( pointerCoordinate.clientY >= clientRectOfCanvas.top && pointerCoordinate.clientY <= clientRectOfCanvas.top + heightOfCanvasContext )
   {
    pointerCoordinate.isPointerInCanvasArea = true;
-   pointerCoordinate.coordinateInCanvasX = pointerCoordinate.clientX - canvasContext.canvas.offsetLeft;
-   pointerCoordinate.coordinateInCanvasY = pointerCoordinate.clientY - canvasContext.canvas.offsetTop;
+   pointerCoordinate.coordinateInCanvasX = pointerCoordinate.clientX - clientRectOfCanvas.left;
+   pointerCoordinate.coordinateInCanvasY = pointerCoordinate.clientY - clientRectOfCanvas.top;
   }else
   {
    pointerCoordinate.isPointerInCanvasArea = false;
@@ -1657,6 +1658,12 @@ startTimerToGetPositionOfPointer.prototype.getPositionOfPointer = function( even
  {
   pointerCoordinate.isPointerInCanvasArea = false;
  }
+
+/*
+  canvasContext.font = "24px serif";
+  text = pointerCoordinate.coordinateInCanvasY + "," + pointerCoordinate.clientY + "," + clientRectOfCanvas.top
+  canvasContext.fillText(text, 20, 32);
+*/
 };
 
 // タイマーを停止させる為のプロトタイプのメソッドを定義する。
