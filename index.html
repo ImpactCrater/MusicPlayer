@@ -41,7 +41,7 @@ Click the title to jump to the location of the item.
 </div>
 
 <canvas id="canvas1" style="vertical-align: bottom">
-</canvas><br />
+</canvas><br>
 
 <div id="areaOfButton1" style="margin: 0 auto; margin-top: 2px; padding: 1px; background-color: #808080; color: #cccccc">
 
@@ -59,13 +59,13 @@ Controls for music.
 </div>
 <div style="text-align: right">
 <label><input type="checkbox" name="checkboxToShuffleMusic" value="ShuffleMusic" checked="checked">Shuffle music</label>
-<button id="buttounToChangeToNextMusic" onclick="changeToNextMusic()">Next Music</button><br />
+<button id="buttounToChangeToNextMusic" onclick="changeToNextMusic()">Next Music</button><br>
 </div>
 </div>
 
 </div>
 <div id="areaOfFile1" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
-If you want to play music, please select your music directory.<br />
+If you want to play music, please select your music directory.<br>
 <div id="areaOfFile1_1" style="background-color: #404040; text-align: left; overflow: hidden">
 <form id="musicFileSelectionForm">
 <div style="text-align: left; float: left">
@@ -83,13 +83,13 @@ If you want to play music, please select your music directory.<br />
 Please select the type of sound from the following.
 <div id="areaOfButton1_3_1" style="background-color: #404040; text-align: left">
 <span class="inlineBlock"><label><input type="radio" name="radioButtonOfTypeOfSound" value="Sine" checked="checked">Sine Wave</label></span>
-<span class="inlineBlock"><label><input type="radio" name="radioButtonOfTypeOfSound" value="Triangle">Triangle Wave</label><br /></span>
+<span class="inlineBlock"><label><input type="radio" name="radioButtonOfTypeOfSound" value="Triangle">Triangle Wave</label><br></span>
 </div>
 </div>
 <div id="areaOfButton1_4" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
 If you want random sound output, please check the option below.
 <div id="innerAreaOfButton1_4_1" style="background-color: #404040; text-align: left">
-<label><input type="checkbox" name="checkboxToPlayRandomSound" onclick="checkOptionOfPlayingRandomSound()" value="PlayRandomSound">Play Random Sound</label><br />
+<label><input type="checkbox" name="checkboxToPlayRandomSound" onclick="checkOptionOfPlayingRandomSound()" value="PlayRandomSound">Play Random Sound</label><br>
 </div>
 </div>
 <div id="areaOfButton1_5" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
@@ -108,11 +108,11 @@ If you want random sound output, please check the option below.
 </div>
 </div>
 <div id="noteArea1" style="margin-top: 1px; background-color: #2e2e2e; text-align: left">
-Key assignment.<br />
+Key assignment.<br>
 <div id="noteArea1_1" style="background-color: #404040; text-align: left">
-<span class="inlineBlock">(z):C (s):Cs (x):D (d):Ds (c):E (v):F (g):Fs</span> <span class="inlineBlock">(b):G (h):Gs (n):A (j):As (m):B (,):C</span><br />
-<span class="inlineBlock">(q):C (2):Cs (w):D (3):Ds (e):E (r):F (5):Fs</span> <span class="inlineBlock">(t):G (6):Gs (y):A (7):As (u):B (i):C</span><br />
-<span class="inlineBlock">(Shift): Increase or decrease one octave.</span> <span class="inlineBlock">(1) or (9): Always G1.</span><br />
+<span class="inlineBlock">(z):C (s):Cs (x):D (d):Ds (c):E (v):F (g):Fs</span> <span class="inlineBlock">(b):G (h):Gs (n):A (j):As (m):B (,):C</span><br>
+<span class="inlineBlock">(q):C (2):Cs (w):D (3):Ds (e):E (r):F (5):Fs</span> <span class="inlineBlock">(t):G (6):Gs (y):A (7):As (u):B (i):C</span><br>
+<span class="inlineBlock">(Shift): Increase or decrease one octave.</span> <span class="inlineBlock">(1) or (9): Always G1.</span><br>
 </div>
 </div>
 
@@ -120,7 +120,7 @@ Key assignment.<br />
 Music Playlist.
 <div id="musicListArea1_2" style="background-color: #404040; text-align: left">
 <div style="text-align: left; float: left">
-<input type="checkbox" name="checkboxToHideUnselectedMusic" value="HideUnselectedItems" onclick="hideUnselectedMusic()">Hide Unselected Items</button>
+<label><input type="checkbox" name="checkboxToHideUnselectedMusic" value="HideUnselectedItems" onclick="hideUnselectedMusic()">Hide Unselected Items</label>
 </div>
 <div style="text-align: right">
 <span class="inlineBlock">
@@ -141,40 +141,40 @@ Import Playlist:
 
 </div>
 </div>
-<br />
+<br>
 
 <div id="description1" style="text-align: left; max-width: 720px; margin: 0 auto; font-size: 75%">
-<strong>キーボード演奏</strong>が可能で<strong>ヴィジュアライザー</strong>の機能が付いた<strong>音楽再生ウェブ アプリケーション</strong>です。<br />
-<br />
-[手順: 1]<br />
-"<span style="color:#4080CE;"><strong>Canvas Play / Stop</strong></span>" ボタンを押して下さい。<br />
-<br />
-[手順: 2]<br />
-フォルダーを選択する為のボタンを押して、現れたウィンドウから<span style="color:#4080CE;"><strong>音楽ファイルが入っているフォルダー</strong></span> (ディレクトリー)を選択して下さい。<br />
-この時、選択の為のウィンドウには、 "開く" などの代わりに、 "アップロード" などと書かれたボタンがあるかもしれませんが、これを押して下さい。決して実際にインターネットにアップロードされたりは致しませんので御安心下さいませ。<br />
-<br />
-[手順: 3]<br />
-"<span style="color:#4080CE;"><strong>Music Play / Stop</strong></span>" ボタンを押して下さい。<br />
-<br />
-すると、音楽の再生と共にスペクトラム アナライザーや音楽のアクセントに連動する花火のようなエフェクトのヴィジュアライザーが動作致します。<br />
-後は、Canvas上を沢山クリック / タップしてみて下さい。<br />
-また、<span style="color:#4080CE;"><strong>キーボードのキーを押してピアノのように音楽を演奏する</strong></span>事も出来ます。<br />
-オクターヴの移動も可能です。<br />
-<span style="color:#4080CE;"><strong>プレイリスト</strong></span>は "<strong>Web Storage API</strong>" で自動保存致します。プレイリストをテキスト ファイルとして書き出しと取り込みも出来ます。<br />
-尚、古いブラウザーや性能が低い端末では動作しなかったりするかと思います。<br />
-<span style="color:#CE4C4C;">もしも何か問題が生じても私は責任を取れませんので御了承下さいませ。</span><br />
-<br />
-[このプログラムについて]<br />
+<strong>キーボード演奏</strong>が可能で<strong>ヴィジュアライザー</strong>の機能が付いた<strong>音楽再生ウェブ アプリケーション</strong>です。<br>
+<br>
+[手順: 1]<br>
+"<span style="color:#4080CE;"><strong>Canvas Play / Stop</strong></span>" ボタンを押して下さい。<br>
+<br>
+[手順: 2]<br>
+フォルダーを選択する為のボタンを押して、現れたウィンドウから<span style="color:#4080CE;"><strong>音楽ファイルが入っているフォルダー</strong></span> (ディレクトリー)を選択して下さい。<br>
+この時、選択の為のウィンドウには、 "開く" などの代わりに、 "アップロード" などと書かれたボタンがあるかもしれませんが、これを押して下さい。決して実際にインターネットにアップロードされたりは致しませんので御安心下さいませ。<br>
+<br>
+[手順: 3]<br>
+"<span style="color:#4080CE;"><strong>Music Play / Stop</strong></span>" ボタンを押して下さい。<br>
+<br>
+すると、音楽の再生と共にスペクトラム アナライザーや音楽のアクセントに連動する花火のようなエフェクトのヴィジュアライザーが動作致します。<br>
+後は、Canvas上を沢山クリック / タップしてみて下さい。<br>
+また、<span style="color:#4080CE;"><strong>キーボードのキーを押してピアノのように音楽を演奏する</strong></span>事も出来ます。<br>
+オクターヴの移動も可能です。<br>
+<span style="color:#4080CE;"><strong>プレイリスト</strong></span>は "<strong>Web Storage API</strong>" で自動保存致します。プレイリストをテキスト ファイルとして書き出しと取り込みも出来ます。<br>
+尚、古いブラウザーや性能が低い端末では動作しなかったりするかと思います。<br>
+<span style="color:#CE4C4C;">もしも何か問題が生じても私は責任を取れませんので御了承下さいませ。</span><br>
+<br>
+[このプログラムについて]<br>
 動作デモ ページ: <a href="https://impactcrater.github.io/MusicPlayer" target="_blank">https://impactcrater.github.io/MusicPlayer</a>
-<br />
+<br>
 ソース コード: <a href="https://github.com/ImpactCrater/MusicPlayer" target="_blank">https://github.com/ImpactCrater/MusicPlayer</a>
-<br />
-"<strong>HTML5</strong>" の "<strong>Canvas</strong>" 要素を利用して画面の描画をしております。<br />
-このプログラムのコードは全てブログ記事のHTML文書内に "<strong>JavaScript</strong>" で記述したものであり、作成するに当たってテキスト エディターとウェブ ブラウザー以外は何も使用しておりません。<br />
-追加のライブラリーなどは一切使用せず、純粋にHTML5対応ブラウザーだけで動作致します。<br />
-音に関しては、 "<strong>Web Audio API</strong>" を利用して、独自の関数で波形を作って鳴らしております。<br />
-フォルダーの選択に "HTMLInputElement.webkitDirectory" という未だ標準化されていない機能を利用している為、動作環境は限られます。 "Firefox 54" 以降では動作確認済みです。<br />
-<br />
+<br>
+"<strong>HTML5</strong>" の "<strong>Canvas</strong>" 要素を利用して画面の描画をしております。<br>
+このプログラムのコードは全てブログ記事のHTML文書内に "<strong>JavaScript</strong>" で記述したものであり、作成するに当たってテキスト エディターとウェブ ブラウザー以外は何も使用しておりません。<br>
+追加のライブラリーなどは一切使用せず、純粋にHTML5対応ブラウザーだけで動作致します。<br>
+音に関しては、 "<strong>Web Audio API</strong>" を利用して、独自の関数で波形を作って鳴らしております。<br>
+フォルダーの選択に "HTMLInputElement.webkitDirectory" という未だ標準化されていない機能を利用している為、動作環境は限られます。 "Firefox 54" 以降では動作確認済みです。<br>
+<br>
 </div>
 <script type="text/javascript">
 
