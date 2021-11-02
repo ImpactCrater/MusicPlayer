@@ -1401,12 +1401,8 @@ setSound.prototype.playMusic = function()
       if( numberOfSelectedFile !== 0 )
       // 選択されている楽曲数が1つ以上あるならば以下の処理を行う。
       {
-       do
-       {
-        nextMusicNumberInSelected = Math.floor( Math.random() * numberOfSelectedFile );
-        nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
-       }while( nextMusicNumberInWhole === musicNumberCurrentlyPlayingInWhole )
-
+       nextMusicNumberInSelected = Math.floor( Math.random() * numberOfSelectedFile );
+       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
        musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
       }else if( numberOfSelectedFile === 0 )
       {
@@ -3644,8 +3640,10 @@ function changeMusic( itemNumber )
   musicNumberCurrentlyPlayingInWhole = listOfCheckedFileNumberToAllFileNumber[itemNumber];
  }
 
+ // 選択項目の背景色を元に戻す。
  divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
 
+ // 新規選択項目の背景色を変える。
  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + itemNumber );
  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
 
@@ -3887,12 +3885,11 @@ function hideUnselectedMusic()
  if( checkboxToHideUnselectedMusic[0].checked === true )
  // 非選択項目を隠すチェックボックスにチェック マークが入ったならば以下の処理を行う。
  {
-  // 一番上の楽曲を選択状態にして置く。
-  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + 0 );
-  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
-
-  musicNumberCurrentlyPlayingInWhole = 0;
-  musicNumberCurrentlyPlayingInSelected = 0;
+  if(listOfCheckedFileNumberToAllFileNumber[musicNumberCurrentlyPlayingInSelected] !== musicNumberCurrentlyPlayingInWhole)
+  // 現在選択中の項目が非選択項目であるならば次の曲を再生させる。
+  {
+   changeToNextMusic();
+  }
  }else
  // 非選択項目を隠すチェックボックスにチェック マークが無くなったならば以下の処理を行う。
  {
