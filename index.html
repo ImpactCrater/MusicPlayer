@@ -120,7 +120,7 @@ Key assignment.<br>
 Music Playlist.
 <div id="musicListArea1_2" style="background-color: #404040; text-align: left">
 <div style="text-align: left; float: left">
-<label><input type="checkbox" name="checkboxToHideUnselectedMusic" value="HideUnselectedItems" onclick="hideUnselectedMusic()">Hide Unselected Items</label>
+<label><input type="checkbox" name="checkboxToHideMusicItemNotInPlaylist" value="HideUnselectedItems" onclick="hideMusicItemNotInPlaylist()">Hide Unselected Items</label>
 </div>
 <div style="text-align: right">
 <span class="inlineBlock">
@@ -197,8 +197,8 @@ let isMusicOutput = false;
 let nextMusicOutput = false;
 let changeMusicNext = false;
 let musicTitleCurrentlyPlaying = '';
-let musicNumberCurrentlyPlayingInWhole = 0;
-let musicNumberCurrentlyPlayingInSelected = 0;
+let currentlySelectedMusicNumberInWhole = 0;
+let currentlySelectedMusicNumberInPlaylist = 0;
 
 let instanceOfSetSoundOfMinimalLevelTone = null;
 let instanceOfSetSound = null;
@@ -234,9 +234,9 @@ let instanceOfImportPlaylist = null;
 let fileList = [];
 let fileNameList = [];
 let fileSelectionStatusList = [];
-let listOfCheckedFileNumberToAllFileNumber = [];
+let listOfPlaylistNumberToAllFileNumber = [];
 let numberOfWholeFile = 0;
-let numberOfSelectedFile = 0;
+let numberOfPlaylistItem = 0;
 
 
 ///////////////////////////////////////////////////////
@@ -248,10 +248,10 @@ let instanceOfButtonInitializer = null;
 let buttonInitializer = function()
 {
  // 非選択項目を隠す為のチェックボックスを使用不可能にする。
- document.getElementsByName( 'checkboxToHideUnselectedMusic' )[0].disabled = true;
+ document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' )[0].disabled = true;
 
  // 非選択項目を隠す為のチェックボックスをチェック解除する。
- document.getElementsByName( 'checkboxToHideUnselectedMusic' )[0].checked = false;
+ document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' )[0].checked = false;
 
  // ファイル選択のフォームを初期化する。
  document.getElementById( 'playlistFileSelectionForm' ).reset();
@@ -550,7 +550,7 @@ audioInitializer.prototype.addFileSelectionHandler = function()
 // オーディオ ファイルを選択した際の処理を行う為のプロトタイプのメソッドを定義する。
 audioInitializer.prototype.handleFileSelection = function( event )
 {
- let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
 
  let matchedFileList = [];
  let inputFileList = event.target.files; // 新たなオブジェクトを宣言して、ファイル オブジェクトのリストである 'FileList' オブジェクトの参照の値渡しをする。
@@ -686,7 +686,7 @@ audioInitializer.prototype.handleFileSelection = function( event )
   }
 
   previousFilePath = filePath;
-  if( checkboxToHideUnselectedMusic[0].checked === false )
+  if( checkboxToHideMusicItemNotInPlaylist[0].checked === false )
   // 非選択項目が隠されていないならば以下の処理を行う。
   {
    output.push(
@@ -707,14 +707,15 @@ audioInitializer.prototype.handleFileSelection = function( event )
 
  numberOfWholeFile = fileList.length;
 
- // 選択したファイル名のラジオ ボタンのリストを表示させる。
+ // 選択したファイル名のラジオ ボタン付きのリストを表示させる。
  document.getElementById( 'listOfInputMusicFile' ).innerHTML = output.join( '' );
 
+ // 楽曲の選択状態を初期化する。
  let divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + 0 );
  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
 
- musicNumberCurrentlyPlayingInWhole = 0;
- musicNumberCurrentlyPlayingInSelected = 0;
+ currentlySelectedMusicNumberInWhole = 0;
+ currentlySelectedMusicNumberInPlaylist = 0;
 
  // Web Storage APIでローカル ストレージに保存されているプレイリストを読み込む。
  loadPlaylist();
@@ -728,8 +729,8 @@ audioInitializer.prototype.handleFileSelection = function( event )
  // プレイリスト取り込みボタンを使用可能にする。
  document.getElementById( 'inputPlaylistFile' ).disabled = false;
 
- // 非選択項目を隠す為のチェックボックスを使用可能にする。
- document.getElementsByName( 'checkboxToHideUnselectedMusic' )[0].disabled = false;
+ // プレイリストに無い項目を隠す為のチェックボックスを使用可能にする。
+ document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' )[0].disabled = false;
 
  // 音楽が再生中であったならば、新たに読み込まれた楽曲を再生させる。
  changeMusic( 0 );
@@ -1351,9 +1352,9 @@ setSound.prototype.playMusic = function()
 
   // 再生する楽曲のファイル パスを記憶させる。
 
-  musicTitleCurrentlyPlaying = fileList[musicNumberCurrentlyPlayingInWhole];
+  musicTitleCurrentlyPlaying = fileList[currentlySelectedMusicNumberInWhole];
 
-  instanceOfAudioInitializer.request.open( 'GET', arrayOfURLOfSourceOfAudioFile[musicNumberCurrentlyPlayingInWhole], true );
+  instanceOfAudioInitializer.request.open( 'GET', arrayOfURLOfSourceOfAudioFile[currentlySelectedMusicNumberInWhole], true );
   instanceOfAudioInitializer.request.responseType = 'arraybuffer';
   instanceOfAudioInitializer.request.send(); // 要求を送り、データを読み込ませる。
 
@@ -1361,7 +1362,7 @@ setSound.prototype.playMusic = function()
   // 曲の再生が終了した時の処理を設定する。
   instanceOfSetSound.audioBufferSourceNodeOfAudioFile.onended = function()
   {
-   let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+   let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
 
    instanceOfSetSound.isMusicBeingOutput = false;
 
@@ -1374,82 +1375,64 @@ setSound.prototype.playMusic = function()
     if( changeMusicNext === true )
     // 次の曲を変更する予定ならば以下の処理を行う。
     {
-     // 次の曲があるならば次の曲を選択状態にする。
-
      let divElementOfButtonToSelectMusic = null;
-     if( checkboxToHideUnselectedMusic[0].checked === false )
-     // 非選択項目が隠されていないならば以下の処理を行う。
+     if( !( checkboxToHideMusicItemNotInPlaylist[0].checked === true && fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === false ) )
+     // 再生リストに無い項目が隠されておらず、または隠されつつも現在選択中の項目が再生リストにあるならば以下の処理を行う。
      {
-      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
-     }else
-     // 非選択項目が隠されているならば以下の処理を行う。
-     {
-      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
+      // 以前の選択された項目を取得する。
+      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
+
+      // 以前の選択項目の背景色を元に戻す。
+      divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
      }
 
-     // 楽曲項目の背景色を元に戻す。
-     divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
-
-
      let nextMusicNumberInWhole = 0;
-     let nextMusicNumberInSelected = 0;
+     let nextMusicNumberInPlaylist = 0;
 
      let checkboxToShuffleMusic = document.getElementsByName( 'checkboxToShuffleMusic' );
-     if( checkboxToShuffleMusic[0].checked === true )
-     // シャッフル有効化のチェックボックスにチェック マークが入っているならば以下の処理を行う。
+     if( numberOfPlaylistItem === 0 )
+     // 再生リストにある楽曲数が0ならば以下の処理を行う。
      {
-      if( numberOfSelectedFile === 0 )
-      // 選択されている楽曲数が0ならば以下の処理を行う。
+      // 現在再生中の楽曲を次回も再生させる。
+      nextMusicNumberInWhole = currentlySelectedMusicNumberInWhole;
+     }else if( numberOfPlaylistItem === 1 )
+     // 再生リストにある楽曲数が1つならば以下の処理を行う。
+     {
+      // 次回は唯一選択されている楽曲を再生する。
+      nextMusicNumberInPlaylist = 0;
+      nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[0];
+      currentlySelectedMusicNumberInPlaylist = nextMusicNumberInPlaylist;
+     }else if( checkboxToShuffleMusic[0].checked === true )
+     // 再生リストにある楽曲数が2つ以上あり、シャッフル有効化のチェックボックスにチェック マークが入っているならば以下の処理を行う。
+     {
+      do
       {
-       // 現在再生中の楽曲を次回も再生させる。
-       nextMusicNumberInWhole = musicNumberCurrentlyPlayingInWhole;
-      }else if( numberOfSelectedFile === 1 )
-      // 選択されている楽曲数が1つならば以下の処理を行う。
-      {
-       // 次回は唯一選択されている楽曲を再生する。
-       nextMusicNumberInSelected = 0;
-       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[0];
-       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
-      }else
-      // 選択されている楽曲数が2つ以上あるならば以下の処理を行う。
-      {
-       do
-       {
-        nextMusicNumberInSelected = Math.floor( Math.random() * numberOfSelectedFile );
-        nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
-       }while( nextMusicNumberInWhole === musicNumberCurrentlyPlayingInWhole )
+       nextMusicNumberInPlaylist = Math.floor( Math.random() * numberOfPlaylistItem );
+       nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
+      }while( nextMusicNumberInWhole === currentlySelectedMusicNumberInWhole )
 
-       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
-      }
+      currentlySelectedMusicNumberInPlaylist = nextMusicNumberInPlaylist;
      }else
+     // 再生リストにある楽曲数が2つ以上あり、シャッフル有効化のチェックボックスにチェック マークが入っていないならば以下の処理を行う。
      {
-      if( musicNumberCurrentlyPlayingInSelected !== numberOfSelectedFile - 1 )
+      if( currentlySelectedMusicNumberInPlaylist !== numberOfPlaylistItem - 1 )
       // 現在の楽曲番号が選択されている楽曲の最大数に達していないならば以下の処理を行う。
       {
-       musicNumberCurrentlyPlayingInSelected++;
-       nextMusicNumberInSelected = musicNumberCurrentlyPlayingInSelected;
-       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+       currentlySelectedMusicNumberInPlaylist++;
+       nextMusicNumberInPlaylist = currentlySelectedMusicNumberInPlaylist;
+       nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
       }else
       // 現在の楽曲番号が選択されている楽曲の最大数に達しているならば以下の処理を行う。
       {
        // 次回は先頭の楽曲を再生する。
-       nextMusicNumberInSelected = 0;
-       musicNumberCurrentlyPlayingInSelected = 0;
-       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+       nextMusicNumberInPlaylist = 0;
+       currentlySelectedMusicNumberInPlaylist = 0;
+       nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
       }
      }
 
-     musicNumberCurrentlyPlayingInWhole = nextMusicNumberInWhole;
-
-     if( checkboxToHideUnselectedMusic[0].checked === false )
-     // 非選択項目が隠されていないならば以下の処理を行う。
-     {
-      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
-     }else
-     // 非選択項目が隠されているならば以下の処理を行う。
-     {
-      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
-     }
+     currentlySelectedMusicNumberInWhole = nextMusicNumberInWhole;
+     divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
 
      // 次に再生する楽曲項目の背景色を変更する。
      divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
@@ -3387,7 +3370,7 @@ importPlaylist.prototype.addLoadingCompletionHandler = function()
 // 音楽のプレイリストのファイルの読み込みが完了した際の処理を行う為のプロトタイプのメソッドを定義する。
 importPlaylist.prototype.handleLoadingCompletion = function()
 {
- let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
 
  let filePathList = [];
  let textData = instanceOfImportPlaylist.fileReader.result;
@@ -3410,7 +3393,7 @@ importPlaylist.prototype.handleLoadingCompletion = function()
    {
     divElementOfButtonToSelectMusic = document.getElementById( 'selectButtonOfMusic' + i );
 
-    if( checkboxToHideUnselectedMusic[0].checked === false )
+    if( checkboxToHideMusicItemNotInPlaylist[0].checked === false )
     // 非選択項目が隠されていないならば以下の処理を行う。
     {
      if( textData[j + 1] === '[/1/]' )
@@ -3423,7 +3406,7 @@ importPlaylist.prototype.handleLoadingCompletion = function()
       fileSelectionStatusList[i] = false;
      }
     }else
-    // 非選択項目が隠されているならば以下の処理を行う。
+    // 非再生リスト項目が隠されているならば以下の処理を行う。
     {
      if( textData[j + 1] === '[/1/]' )
      {
@@ -3555,9 +3538,10 @@ function toggleMusicPlayOrStop()
 {
  let i = 0;
  if( isMusicOutput === true )
+ // もし音楽を出力中ならば以下の処理を行う。
  {
   if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null )
-  // もし再生中の音楽があるならば以下の処理を行う。
+  // もし再生中の音楽データがあるならば以下の処理を行う。
   {
    nextMusicOutput = false;
    changeMusicNext = false;
@@ -3580,35 +3564,40 @@ function toggleMusicPlayOrStop()
   }
 
  }else
+ // もし音楽を出力中でないならば以下の処理を行う。
  {
-  if( instanceOfSetSoundOfMinimalLevelTone === null )
+  if( fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === true )
+  // 現在選択中の楽曲が再生リストにある項目ならば以下の処理を行う。
   {
-   instanceOfSetSoundOfMinimalLevelTone = new setSoundOfMinimalLevelTone();
+   if( instanceOfSetSoundOfMinimalLevelTone === null )
+   {
+    instanceOfSetSoundOfMinimalLevelTone = new setSoundOfMinimalLevelTone();
+   }
+
+   if( isMinimalLevelToneOutput === false )
+   {
+    instanceOfSetSoundOfMinimalLevelTone.startSoundOfMinimalLevelTone(); // 極微小音出力を開始する。
+    isMinimalLevelToneOutput = true;
+   }
+
+   if( instanceOfSetSound === null )
+   {
+    instanceOfSetSound = new setSound();
+   }
+
+
+   // 音楽を出力させる。
+
+   changeMusicVolume(); // 音楽の再生音量を設定する。
+   nextMusicOutput = true;
+   changeMusicNext = true;
+
+   // 次の楽曲に変更するボタンを使用可能にする。
+   document.getElementById( 'buttounToChangeToNextMusic' ).disabled = false;
+
+   isMusicOutput = true;
+   instanceOfSetSound.playMusic();
   }
-
-  if( isMinimalLevelToneOutput === false )
-  {
-   instanceOfSetSoundOfMinimalLevelTone.startSoundOfMinimalLevelTone(); // 極微小音出力を開始する。
-   isMinimalLevelToneOutput = true;
-  }
-
-  if( instanceOfSetSound === null )
-  {
-   instanceOfSetSound = new setSound();
-  }
-
-
-  // 音楽を出力させる。
-
-  changeMusicVolume(); // 音楽の再生音量を設定する。
-  nextMusicOutput = true;
-  changeMusicNext = true;
-
-  // 次の楽曲に変更するボタンを使用可能にする。
-  document.getElementById( 'buttounToChangeToNextMusic' ).disabled = false;
-
-  isMusicOutput = true;
-  instanceOfSetSound.playMusic();
  }
 }
 
@@ -3616,50 +3605,26 @@ function toggleMusicPlayOrStop()
 ///////////////////////////////////////////////////////
 
 
-function changeMusic( itemNumber )
+function changeMusic( itemNumberInWhole )
 {
  let divElementOfButtonToSelectMusic = null;
- let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
 
- if( checkboxToHideUnselectedMusic[0].checked === false )
- // 非選択項目が隠されていないならば以下の処理を行う。
+ if( !( checkboxToHideMusicItemNotInPlaylist[0].checked === true && fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === false ) )
+ // 再生リストに無い項目が隠されておらず、または隠されつつも現在選択中の項目が再生リストにあるならば以下の処理を行う。
  {
-  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+  // 以前の選択された項目を取得する。
+  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
 
-  let i = 0;
-  let j = 0;
-  for( i = 0, j = - 1; i < numberOfWholeFile; i++ )
-  {
-   if( fileSelectionStatusList[i] === true )
-   {
-    j++;
-   }
-
-   if( i === itemNumber )
-   {
-    break;
-   }
-  }
-
-  musicNumberCurrentlyPlayingInSelected = j;
-  musicNumberCurrentlyPlayingInWhole = itemNumber;
-
- }else
- // 非選択項目が隠されているならば以下の処理を行う。
- {
-  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
-
-  musicNumberCurrentlyPlayingInSelected = itemNumber;
-  musicNumberCurrentlyPlayingInWhole = listOfCheckedFileNumberToAllFileNumber[itemNumber];
+  // 以前の選択項目の背景色を元に戻す。
+  divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
  }
 
- // 選択項目の背景色を元に戻す。
- divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
-
  // 新規選択項目の背景色を変える。
- divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + itemNumber );
+ divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + itemNumberInWhole );
  divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
 
+ currentlySelectedMusicNumberInWhole = itemNumberInWhole;
 
  if( isMusicOutput === true )
  {
@@ -3779,19 +3744,10 @@ function checkOptionOfPlayingRandomSound()
 function scrollToItem()
 {
  let divElementOfMusicItem = null;
- let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
- if( checkboxToHideUnselectedMusic[0].checked === false )
- // 非選択項目が隠されていないならば以下の処理を行う。
- {
-  divElementOfMusicItem = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
- }else
- // 非選択項目が隠されているならば以下の処理を行う。
- {
-  divElementOfMusicItem = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInSelected );
- }
-
- if( divElementOfMusicItem !== null )
- // もしその楽曲がリストに表示されているならば以下の処理を行う。
+ divElementOfMusicItem = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
+ if( divElementOfMusicItem !== null && !( checkboxToHideMusicItemNotInPlaylist[0].checked === true && fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === false ) )
+ // もし項目の要素があり、再生リストに無い項目が隠されておらず、または隠されつつも現在選択中の項目が再生リストにあるならば以下の処理を行う。
  {
   let clientRectOfMusicItem = divElementOfMusicItem.getBoundingClientRect();
   let clientRectOfMusicListArea = document.getElementById( 'musicListArea1_3' ).getBoundingClientRect();
@@ -3811,27 +3767,27 @@ function scrollToItem()
 
 
 // 音楽の非選択の項目の表示を切り替える為の関数を宣言する。
-function hideUnselectedMusic()
+function hideMusicItemNotInPlaylist()
 {
- let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
 
  let output = []; // 出力内容を格納する為の配列を宣言する。
  let filePath = '';
  let previousFilePath = '';
  let maximumOfNumber = 0;
- if( checkboxToHideUnselectedMusic[0].checked === true )
+ if( checkboxToHideMusicItemNotInPlaylist[0].checked === true )
  // 非選択項目を隠すチェックボックスにチェック マークが入ったならば以下の処理を行う。
  {
-  let checkedFileNumber = 0;
+  let itemNumberInWhole = 0;
   let i = 0;
-  for( i = 0; i < numberOfSelectedFile; i++ )
+  for( i = 0; i < numberOfPlaylistItem; i++ )
   {
-   checkedFileNumber = listOfCheckedFileNumberToAllFileNumber[i];
+   itemNumberInWhole = listOfPlaylistNumberToAllFileNumber[i];
 
    // 選択したファイル名のラジオ ボタンのリストを生成する。
 
    // ファイルの相対パスからファイル名以外の部分を取り出す。
-   filePath = fileList[checkedFileNumber].slice( 0, - fileNameList[checkedFileNumber].length );
+   filePath = fileList[itemNumberInWhole].slice( 0, - fileNameList[itemNumberInWhole].length );
 
    if( filePath !== previousFilePath )
    // 前のファイルパスと一致しないならば以下の処理を行う。
@@ -3841,9 +3797,16 @@ function hideUnselectedMusic()
 
    previousFilePath = filePath;
    output.push(
-    '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
-    fileNameList[checkedFileNumber],
+    '<div id="musicItem', itemNumberInWhole, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', itemNumberInWhole, ')">',
+    fileNameList[itemNumberInWhole],
     '</div>' );
+  }
+
+  if( isMusicOutput === true )
+  // 楽曲を再生中ならば以下の処理を行う。
+  {
+   // 再生を止める。
+   toggleMusicPlayOrStop();
   }
  }else
  // 非選択項目を隠すチェックボックスにチェック マークが無くなったならば以下の処理を行う。
@@ -3864,6 +3827,7 @@ function hideUnselectedMusic()
    previousFilePath = filePath;
 
    if( fileSelectionStatusList[i] === true )
+   // その項目が再生リストにあるならば以下の処理を行う。
    {
     output.push(
      '<div style="margin: 0 auto; margin: 0 auto; float: left" onclick="changeSelectionStatus(', i, ')">',
@@ -3891,23 +3855,15 @@ function hideUnselectedMusic()
   }
  }
 
- // 選択したファイル名のラジオ ボタンのリストを表示させる。
+ // 再生リストのファイル名のラジオ ボタン付きのリストを表示させる。
  document.getElementById( 'listOfInputMusicFile' ).innerHTML = output.join( '' );
 
- let divElementOfButtonToSelectMusic = null;
- if( checkboxToHideUnselectedMusic[0].checked === true )
- // 非選択項目を隠すチェックボックスにチェック マークが入ったならば以下の処理を行う。
+ if( !( checkboxToHideMusicItemNotInPlaylist[0].checked === true && fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === false ) )
+ // もし再生リストに無い項目が隠されておらず、または隠されつつも現在選択中の項目が再生リストにあるならば以下の処理を行う。
  {
-  if(listOfCheckedFileNumberToAllFileNumber[musicNumberCurrentlyPlayingInSelected] !== musicNumberCurrentlyPlayingInWhole)
-  // 現在選択中の項目が非選択項目であるならば次の曲を再生させる。
-  {
-   changeToNextMusic();
-  }
- }else
- // 非選択項目を隠すチェックボックスにチェック マークが無くなったならば以下の処理を行う。
- {
-  // 再生中の楽曲を選択状態にして置く。
-  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + musicNumberCurrentlyPlayingInWhole );
+  // 現在選択中の項目を選択状態にして置く。
+  let divElementOfButtonToSelectMusic = null;
+  divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
   divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
  }
 }
@@ -3953,7 +3909,7 @@ function exportPlaylist()
 
 // 楽曲の選択状態の変更を処理する為の関数を宣言する。
 let timerToSavePlaylist = null;
-function changeSelectionStatus( itemNumber )
+function changeSelectionStatus( itemNumberInWhole )
 {
  if( timerToSavePlaylist !== null )
  // プレイリストを保存する関数を呼び出すタイマーが稼働中であるならばタイマーを停止させる。
@@ -3961,40 +3917,40 @@ function changeSelectionStatus( itemNumber )
   clearTimeout( timerToSavePlaylist );
  }
 
- let divElementOfButtonToSelectMusic = document.getElementById( 'selectButtonOfMusic' + itemNumber );
+ let divElementOfButtonToSelectMusic = document.getElementById( 'selectButtonOfMusic' + itemNumberInWhole );
 
  // ボタンの色を変更し、ファイルの選択状態を記録したリストを更新する。
- if( fileSelectionStatusList[itemNumber] === false )
+ if( fileSelectionStatusList[itemNumberInWhole] === false )
  {
   divElementOfButtonToSelectMusic.style['background-color'] = '#eeeeee';
 
-  if( itemNumber < listOfCheckedFileNumberToAllFileNumber[musicNumberCurrentlyPlayingInSelected] )
+  if( itemNumberInWhole < listOfPlaylistNumberToAllFileNumber[currentlySelectedMusicNumberInPlaylist] )
   {
-   musicNumberCurrentlyPlayingInSelected++;
+   currentlySelectedMusicNumberInPlaylist++;
   }
 
-  fileSelectionStatusList[itemNumber] = true;
+  fileSelectionStatusList[itemNumberInWhole] = true;
  }else
  {
   divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
 
-  if( itemNumber <= listOfCheckedFileNumberToAllFileNumber[musicNumberCurrentlyPlayingInSelected] )
+  if( itemNumberInWhole <= listOfPlaylistNumberToAllFileNumber[currentlySelectedMusicNumberInPlaylist] )
   {
-   musicNumberCurrentlyPlayingInSelected--;
+   currentlySelectedMusicNumberInPlaylist--;
   }
 
-  fileSelectionStatusList[itemNumber] = false;
+  fileSelectionStatusList[itemNumberInWhole] = false;
  }
 
  for( i = 0, j = 0; i < numberOfWholeFile; i++ )
  {
   if( fileSelectionStatusList[i] === true )
   {
-   listOfCheckedFileNumberToAllFileNumber[j] = i;
+   listOfPlaylistNumberToAllFileNumber[j] = i;
    j++;
   }
  }
- numberOfSelectedFile = j;
+ numberOfPlaylistItem = j;
 
  // 指定時間経過後にプレイリストを保存する。
  timerToSavePlaylist = setTimeout( function(){savePlaylist();}, 4000 );
@@ -4044,7 +4000,7 @@ function savePlaylist()
 // 音楽のプレイリストのWeb Storage APIによる読み込みを行う為の関数を宣言する。
 function loadPlaylist()
 {
- let checkboxToHideUnselectedMusic = document.getElementsByName( 'checkboxToHideUnselectedMusic' );
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
 
  let filePathList = [];
  let textData = ''; 
@@ -4079,14 +4035,14 @@ function loadPlaylist()
     if( textData[j + 1] === '[/1/]' )
     {
      fileSelectionStatusList[i] = true;
-     if( checkboxToHideUnselectedMusic[0].checked === false )
+     if( checkboxToHideMusicItemNotInPlaylist[0].checked === false )
      // 非選択項目が隠されていないならば以下の処理を行う。
      {
       divElementOfButtonToSelectMusic.style['background-color'] = '#eeeeee';
      }
     }else
     {
-     if( checkboxToHideUnselectedMusic[0].checked === false )
+     if( checkboxToHideMusicItemNotInPlaylist[0].checked === false )
      // 非選択項目が隠されていないならば以下の処理を行う。
      {
       divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
@@ -4098,12 +4054,12 @@ function loadPlaylist()
 
   if( fileSelectionStatusList[i] === true )
   {
-   listOfCheckedFileNumberToAllFileNumber[k] = i;
+   listOfPlaylistNumberToAllFileNumber[k] = i;
    k++;
   }
  }
 
- numberOfSelectedFile = k;
+ numberOfPlaylistItem = k;
 }
 
 
@@ -4128,7 +4084,7 @@ window['changeMusicVolume'] = changeMusicVolume;
 window['changeToNextMusic'] = changeToNextMusic;
 window['checkOptionOfPlayingRandomSound'] = checkOptionOfPlayingRandomSound;
 window['scrollToItem'] = scrollToItem;
-window['hideUnselectedMusic'] = hideUnselectedMusic;
+window['hideMusicItemNotInPlaylist'] = hideMusicItemNotInPlaylist;
 window['exportPlaylist'] = exportPlaylist;
 window['changeSelectionStatus'] = changeSelectionStatus;
 window['savePlaylist'] = savePlaylist;
