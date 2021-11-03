@@ -1402,8 +1402,7 @@ setSound.prototype.playMusic = function()
       // 選択されている楽曲数が0ならば以下の処理を行う。
       {
        // 現在再生中の楽曲を次回も再生させる。
-       nextMusicNumberInSelected = musicNumberCurrentlyPlayingInSelected;
-       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+       nextMusicNumberInWhole = musicNumberCurrentlyPlayingInWhole;
       }else if( numberOfSelectedFile === 1 )
       // 選択されている楽曲数が1つならば以下の処理を行う。
       {
@@ -1433,8 +1432,9 @@ setSound.prototype.playMusic = function()
       }else
       // 現在の楽曲番号が選択されている楽曲の最大数に達しているならば以下の処理を行う。
       {
+       // 次回は先頭の楽曲を再生する。
        nextMusicNumberInSelected = 0;
-       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
+       musicNumberCurrentlyPlayingInSelected = 0;
        nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
       }
      }
