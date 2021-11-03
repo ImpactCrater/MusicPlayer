@@ -1398,16 +1398,29 @@ setSound.prototype.playMusic = function()
      if( checkboxToShuffleMusic[0].checked === true )
      // シャッフル有効化のチェックボックスにチェック マークが入っているならば以下の処理を行う。
      {
-      if( numberOfSelectedFile !== 0 )
-      // 選択されている楽曲数が1つ以上あるならば以下の処理を行う。
+      if( numberOfSelectedFile === 0 )
+      // 選択されている楽曲数が0ならば以下の処理を行う。
       {
-       nextMusicNumberInSelected = Math.floor( Math.random() * numberOfSelectedFile );
-       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
-       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
-      }else if( numberOfSelectedFile === 0 )
-      {
+       // 現在再生中の楽曲を次回も再生させる。
        nextMusicNumberInSelected = musicNumberCurrentlyPlayingInSelected;
        nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+      }else if( numberOfSelectedFile === 1 )
+      // 選択されている楽曲数が1つならば以下の処理を行う。
+      {
+       // 次回は唯一選択されている楽曲を再生する。
+       nextMusicNumberInSelected = 0;
+       nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[0];
+       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
+      }else
+      // 選択されている楽曲数が2つ以上あるならば以下の処理を行う。
+      {
+       do
+       {
+        nextMusicNumberInSelected = Math.floor( Math.random() * numberOfSelectedFile );
+        nextMusicNumberInWhole = listOfCheckedFileNumberToAllFileNumber[nextMusicNumberInSelected];
+       }while( nextMusicNumberInWhole === musicNumberCurrentlyPlayingInWhole )
+
+       musicNumberCurrentlyPlayingInSelected = nextMusicNumberInSelected;
       }
      }else
      {
