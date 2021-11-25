@@ -696,7 +696,7 @@ audioInitializer.prototype.handleFileSelection = function( event )
     '</div></div></div>' );
   }
   output.push(
-   '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+   '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusicToSelectedItem(', i, ')">',
    matchedFileList[i].name,
    '</div>' );
 
@@ -731,9 +731,6 @@ audioInitializer.prototype.handleFileSelection = function( event )
 
  // プレイリストに無い項目を隠す為のチェックボックスを使用可能にする。
  document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' )[0].disabled = false;
-
- // 音楽が再生中であったならば、新たに読み込まれた楽曲を再生させる。
- changeMusic( 0 );
 };
 
 
@@ -1336,13 +1333,6 @@ setSound.prototype.playMusic = function()
  if( arrayOfURLOfSourceOfAudioFile !== null )
  // オーディオ ファイルのURLのリストが存在するならば以下の処理を行う。
  {
-  if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null && instanceOfSetSound.isMusicBeingOutput === true )
-  // 曲の再生中であるならば以下の処理を行う。
-  {
-   // 再生していた音楽を停止させる。
-   instanceOfSetSound.stopMusic();
-  }
-
   // AudioBufferSourceNodeを取得する。
   // これはAudioBufferを再生する時に使うAudioNodeである。
   instanceOfSetSound.audioBufferSourceNodeOfAudioFile = audioContext.createBufferSource();
@@ -1358,96 +1348,109 @@ setSound.prototype.playMusic = function()
   instanceOfAudioInitializer.request.responseType = 'arraybuffer';
   instanceOfAudioInitializer.request.send(); // 要求を送り、データを読み込ませる。
 
+  // 次に曲の再生が終了した時の処理を設定する。
+  instanceOfSetSound.musicEndedHandler();
+ }
+};
 
-  // 曲の再生が終了した時の処理を設定する。
-  instanceOfSetSound.audioBufferSourceNodeOfAudioFile.onended = function()
+// 曲の再生が停止した際のイヴェントのリスナーを設定する為のプロトタイプのメソッドを定義する。
+setSound.prototype.musicEndedHandler = function()
+{
+ let thisSetSound = this;
+
+ // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
+ this.variableForFunctionOfHandlingMusicEnded = function( event ){thisSetSound.musicEndedEvent();};
+ instanceOfSetSound.audioBufferSourceNodeOfAudioFile.addEventListener( 'ended', this.variableForFunctionOfHandlingMusicEnded, false );
+ // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
+};
+
+// 曲の再生が完全に停止した際の処理を行う為のプロトタイプのメソッドを定義する。
+setSound.prototype.musicEndedEvent = function()
+{
+ let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
+
+ instanceOfSetSound.isMusicBeingOutput = false;
+
+ // 音楽再生ボタンを使用可能にする。
+ document.getElementById( 'buttounToPlayMusic' ).disabled = false;
+
+ if( nextMusicOutput === true )
+ // 次の曲を再生させる予定ならば以下の処理を行う。
+ {
+  if( changeMusicNext === true )
+  // 次の曲を変更する予定ならば以下の処理を行う。
   {
-   let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
-
-   instanceOfSetSound.isMusicBeingOutput = false;
-
-   // 音楽再生ボタンを使用可能にする。
-   document.getElementById( 'buttounToPlayMusic' ).disabled = false;
-
-   if( nextMusicOutput === true )
-   // 次の曲を再生させる予定ならば以下の処理を行う。
+   let divElementOfButtonToSelectMusic = null;
+   if( !( checkboxToHideMusicItemNotInPlaylist[0].checked === true && fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === false ) )
+   // 再生リストに無い項目が隠されておらず、または隠されつつも現在選択中の項目が再生リストにあるならば以下の処理を行う。
    {
-    if( changeMusicNext === true )
-    // 次の曲を変更する予定ならば以下の処理を行う。
-    {
-     let divElementOfButtonToSelectMusic = null;
-     if( !( checkboxToHideMusicItemNotInPlaylist[0].checked === true && fileSelectionStatusList[currentlySelectedMusicNumberInWhole] === false ) )
-     // 再生リストに無い項目が隠されておらず、または隠されつつも現在選択中の項目が再生リストにあるならば以下の処理を行う。
-     {
-      // 以前の選択された項目を取得する。
-      divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
+    // 以前の選択された項目を取得する。
+    divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
 
-      // 以前の選択項目の背景色を元に戻す。
-      divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
-     }
-
-     let nextMusicNumberInWhole = 0;
-     let nextMusicNumberInPlaylist = 0;
-
-     let checkboxToShuffleMusic = document.getElementsByName( 'checkboxToShuffleMusic' );
-     if( numberOfPlaylistItem === 0 )
-     // 再生リストにある楽曲数が0ならば以下の処理を行う。
-     {
-      // 現在再生中の楽曲を次回も再生させる。
-      nextMusicNumberInWhole = currentlySelectedMusicNumberInWhole;
-     }else if( numberOfPlaylistItem === 1 )
-     // 再生リストにある楽曲数が1つならば以下の処理を行う。
-     {
-      // 次回は唯一選択されている楽曲を再生する。
-      nextMusicNumberInPlaylist = 0;
-      nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[0];
-      currentlySelectedMusicNumberInPlaylist = nextMusicNumberInPlaylist;
-     }else if( checkboxToShuffleMusic[0].checked === true )
-     // 再生リストにある楽曲数が2つ以上あり、シャッフル有効化のチェックボックスにチェック マークが入っているならば以下の処理を行う。
-     {
-      do
-      {
-       nextMusicNumberInPlaylist = Math.floor( Math.random() * numberOfPlaylistItem );
-       nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
-      }while( nextMusicNumberInWhole === currentlySelectedMusicNumberInWhole )
-
-      currentlySelectedMusicNumberInPlaylist = nextMusicNumberInPlaylist;
-     }else
-     // 再生リストにある楽曲数が2つ以上あり、シャッフル有効化のチェックボックスにチェック マークが入っていないならば以下の処理を行う。
-     {
-      if( currentlySelectedMusicNumberInPlaylist !== numberOfPlaylistItem - 1 )
-      // 現在の楽曲番号が選択されている楽曲の最大数に達していないならば以下の処理を行う。
-      {
-       currentlySelectedMusicNumberInPlaylist++;
-       nextMusicNumberInPlaylist = currentlySelectedMusicNumberInPlaylist;
-       nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
-      }else
-      // 現在の楽曲番号が選択されている楽曲の最大数に達しているならば以下の処理を行う。
-      {
-       // 次回は先頭の楽曲を再生する。
-       nextMusicNumberInPlaylist = 0;
-       currentlySelectedMusicNumberInPlaylist = 0;
-       nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
-      }
-     }
-
-     currentlySelectedMusicNumberInWhole = nextMusicNumberInWhole;
-     divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
-
-     // 次に再生する楽曲項目の背景色を変更する。
-     divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
-    }
-
-    changeMusicNext = true;
-
-    // 新たに再生を始める。
-    instanceOfSetSound.playMusic();
-   }else
-   // スペクトラム アナライザーのヴィジュアライザーの描画を停止させる。
-   {
-    instanceOfSpectrumVisualizer.stopTimerForDrawingSpectrum();
+    // 以前の選択項目の背景色を元に戻す。
+    divElementOfButtonToSelectMusic.style['background-color'] = '#404040';
    }
+
+   let nextMusicNumberInWhole = 0;
+   let nextMusicNumberInPlaylist = 0;
+
+   let checkboxToShuffleMusic = document.getElementsByName( 'checkboxToShuffleMusic' );
+   if( numberOfPlaylistItem === 0 )
+   // 再生リストにある楽曲数が0ならば以下の処理を行う。
+   {
+    // 現在再生中の楽曲を次回も再生させる。
+    nextMusicNumberInWhole = currentlySelectedMusicNumberInWhole;
+   }else if( numberOfPlaylistItem === 1 )
+   // 再生リストにある楽曲数が1つならば以下の処理を行う。
+   {
+    // 次回は唯一選択されている楽曲を再生する。
+    nextMusicNumberInPlaylist = 0;
+    nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[0];
+    currentlySelectedMusicNumberInPlaylist = nextMusicNumberInPlaylist;
+   }else if( checkboxToShuffleMusic[0].checked === true )
+   // 再生リストにある楽曲数が2つ以上あり、シャッフル有効化のチェックボックスにチェック マークが入っているならば以下の処理を行う。
+   {
+    do
+    {
+     nextMusicNumberInPlaylist = Math.floor( Math.random() * numberOfPlaylistItem );
+     nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
+    }while( nextMusicNumberInWhole === currentlySelectedMusicNumberInWhole )
+
+    currentlySelectedMusicNumberInPlaylist = nextMusicNumberInPlaylist;
+   }else
+   // 再生リストにある楽曲数が2つ以上あり、シャッフル有効化のチェックボックスにチェック マークが入っていないならば以下の処理を行う。
+   {
+    if( currentlySelectedMusicNumberInPlaylist !== numberOfPlaylistItem - 1 )
+    // 現在の楽曲番号が選択されている楽曲の最大数に達していないならば以下の処理を行う。
+    {
+     currentlySelectedMusicNumberInPlaylist++;
+     nextMusicNumberInPlaylist = currentlySelectedMusicNumberInPlaylist;
+     nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
+    }else
+    // 現在の楽曲番号が選択されている楽曲の最大数に達しているならば以下の処理を行う。
+    {
+     // 次回は先頭の楽曲を再生する。
+     nextMusicNumberInPlaylist = 0;
+     currentlySelectedMusicNumberInPlaylist = 0;
+     nextMusicNumberInWhole = listOfPlaylistNumberToAllFileNumber[nextMusicNumberInPlaylist];
+    }
+   }
+
+   currentlySelectedMusicNumberInWhole = nextMusicNumberInWhole;
+   divElementOfButtonToSelectMusic = document.getElementById( 'musicItem' + currentlySelectedMusicNumberInWhole );
+
+   // 次に再生する楽曲項目の背景色を変更する。
+   divElementOfButtonToSelectMusic.style['background-color'] = '#4e4e4e';
   }
+
+  changeMusicNext = true;
+
+  // 新たに再生を始める。
+  instanceOfSetSound.playMusic();
+ }else
+ // スペクトラム アナライザーのヴィジュアライザーの描画を停止させる。
+ {
+  instanceOfSpectrumVisualizer.stopTimerForDrawingSpectrum();
  }
 };
 
@@ -1501,10 +1504,10 @@ setSound.prototype.stopMusic = function()
  // 値は現在値との相対値である。
  // 'setValueAtTime' 等のメソッドで初期値を設定してからでないと 'linearRampToValueAtTime' でゲインを滑らかに変更出来ない。
  this.gainNodeForMusicPlayback.gain.setValueAtTime( this.musicPlaybackGain, 0 );
- this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 0.4 );
+ this.gainNodeForMusicPlayback.gain.linearRampToValueAtTime( 0.0, currentTime + 0.8 );
 
  // 音の再生を停止する。
- this.audioBufferSourceNodeOfAudioFile.stop( currentTime + 1.6 );
+ this.audioBufferSourceNodeOfAudioFile.stop( currentTime + 1.0 );
 };
 
 
@@ -3546,8 +3549,8 @@ function toggleMusicPlayOrStop()
    nextMusicOutput = false;
    changeMusicNext = false;
 
-  // 次の楽曲に変更するボタンを使用不可能にする。
-  document.getElementById( 'buttounToChangeToNextMusic' ).disabled = true;
+   // 次の楽曲に変更するボタンを使用不可能にする。
+   document.getElementById( 'buttounToChangeToNextMusic' ).disabled = true;
 
    // 再生していた音楽を停止させる。
    instanceOfSetSound.stopMusic();
@@ -3605,7 +3608,7 @@ function toggleMusicPlayOrStop()
 ///////////////////////////////////////////////////////
 
 
-function changeMusic( itemNumberInWhole )
+function changeMusicToSelectedItem( itemNumberInWhole )
 {
  let divElementOfButtonToSelectMusic = null;
  let checkboxToHideMusicItemNotInPlaylist = document.getElementsByName( 'checkboxToHideMusicItemNotInPlaylist' );
@@ -3642,8 +3645,12 @@ function changeMusic( itemNumberInWhole )
  {
   changeMusicNext = false;
 
-  // 音楽を再生させる。
-  instanceOfSetSound.playMusic();
+  if( instanceOfSetSound.audioBufferSourceNodeOfAudioFile !== null && instanceOfSetSound.isMusicBeingOutput === true )
+  // 曲の再生中であるならば以下の処理を行う。
+  {
+   // 再生していた音楽を停止させる。
+   instanceOfSetSound.stopMusic();
+  }
  }
 }
 
@@ -3809,7 +3816,7 @@ function hideMusicItemNotInPlaylist()
 
    previousFilePath = filePath;
    output.push(
-    '<div id="musicItem', itemNumberInWhole, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', itemNumberInWhole, ')">',
+    '<div id="musicItem', itemNumberInWhole, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusicToSelectedItem(', itemNumberInWhole, ')">',
     fileNameList[itemNumberInWhole],
     '</div>' );
   }
@@ -3848,7 +3855,7 @@ function hideMusicItemNotInPlaylist()
      '</div></div></div>' );
 
     output.push(
-     '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+     '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusicToSelectedItem(', i, ')">',
      fileNameList[i],
      '</div>' );
    }else
@@ -3860,7 +3867,7 @@ function hideMusicItemNotInPlaylist()
      '</div></div></div>' );
 
     output.push(
-     '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusic(', i, ')">',
+     '<div id="musicItem', i, '" style="margin: 0 auto; padding: 2px 0px 2px 24px" onclick="changeMusicToSelectedItem(', i, ')">',
      fileNameList[i],
      '</div>' );
    }
@@ -4091,7 +4098,7 @@ window['canvasTerminate'] = canvasTerminate;
 window['canvasStart'] = canvasStart;
 window['abortLoading'] = abortLoading;
 window['toggleMusicPlayOrStop'] = toggleMusicPlayOrStop;
-window['changeMusic'] = changeMusic;
+window['changeMusicToSelectedItem'] = changeMusicToSelectedItem;
 window['changeMusicVolume'] = changeMusicVolume;
 window['changeToNextMusic'] = changeToNextMusic;
 window['checkOptionOfPlayingRandomSound'] = checkOptionOfPlayingRandomSound;
