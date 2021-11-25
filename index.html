@@ -3626,12 +3626,24 @@ function changeMusic( itemNumberInWhole )
 
  currentlySelectedMusicNumberInWhole = itemNumberInWhole;
 
+ let i = 0;
+ let j = 0;
+ for( i = 0, j = -1; i <= itemNumberInWhole; i++ )
+ {
+  if( fileSelectionStatusList[i] === true )
+  {
+   j++;
+  }
+ }
+
+ currentlySelectedMusicNumberInPlaylist = j;
+
  if( isMusicOutput === true )
  {
   changeMusicNext = false;
 
-  // 音楽を停止させ、次の楽曲を再生させる。
-  instanceOfSetSound.stopMusic();
+  // 音楽を再生させる。
+  instanceOfSetSound.playMusic();
  }
 }
 
