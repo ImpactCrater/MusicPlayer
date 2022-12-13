@@ -1682,7 +1682,7 @@ let interactiveCanvas = function()
  // プロパティーを定義して固有の値を格納する。
  this.timerForBackgroundColoring = null;
 
- this.timerForTracePointer = null;
+ this.timerForDisplayCanvas = null;
  this.timerForProcessingMouseDownEffect = null;
  this.variableForFunctionOfProcessingMouseDownEvent = null;
  this.variableForFunctionOfProcessingMouseUpEvent = null;
@@ -1711,7 +1711,6 @@ let interactiveCanvas = function()
  this.addLusingWindowFocusHandler(); // ウィンドウがフォーカスを失った際のイヴェントを扱う関数を設定する関数を呼び出す。
  this.startBackgroundColoringTimer();
  this.startTimerToGetPositionOfPointer = new startTimerToGetPositionOfPointer();
- this.startPointerTraceTimer();
 
 
 
@@ -1772,6 +1771,9 @@ let interactiveCanvas = function()
  // 視覚効果の描画を行う関数のタイマーを始動させる。
  let thisInteractiveCanvas = this;
  this.timerForDrawingVisualEffect = setInterval( function(){thisInteractiveCanvas.drawVisualEffect();}, 25 );
+
+ // 画面を描画する処理を行う関数をタイマーによるインターヴァル動作で実行する。
+ this.timerForDisplayCanvas = setInterval( function(){thisInteractiveCanvas.displayCanvas();}, 20 );
 };
 
 // 画面を表示する為のプロトタイプのメソッドを定義する。
@@ -1797,12 +1799,15 @@ interactiveCanvas.prototype.displayCanvas = function()
  }
 
  // 稼働中の視覚効果の処理用タイマーがあるかどうかを調べる。
- for( i = 0; i < instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect; i++ )
+ if( instanceOfInteractiveCanvas !== null )
  {
-  if( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[i] !== null )
+  for( i = 0; i < instanceOfInteractiveCanvas.numberOfTimerForProcessingVisualEffect; i++ )
   {
-   isVisualEffectEmpty = false;
-   break;
+   if( instanceOfInteractiveCanvas.timerForProcessingVisualEffect[i] !== null )
+   {
+    isVisualEffectEmpty = false;
+    break;
+   }
   }
  }
 
@@ -1834,7 +1839,7 @@ interactiveCanvas.prototype.addMouseDownHandler = function()
 
  // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
  this.variableForFunctionOfProcessingMouseDownEvent = function(){thisInteractiveCanvas.processMouseDownEvent();};
- canvas1.addEventListener( 'mousedown', this.variableForFunctionOfProcessingMouseDownEvent, false );
+ canvasElement.addEventListener( 'mousedown', this.variableForFunctionOfProcessingMouseDownEvent, false );
  // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
 };
 
@@ -2000,6 +2005,8 @@ interactiveCanvas.prototype.processKeyDownEvent = function( event )
   }
  }
 
+ let octaveNumberPlus1 = 0;
+ let octaveNumberPlus2 = 0;
  if( octaveNumber === 0 )
  {
   octaveNumberPlus1 = octaveNumber + 1;
@@ -2318,7 +2325,7 @@ interactiveCanvas.prototype.processKeyUpEvent = function( event )
 // 画面を徐々に消して行く為のプロトタイプのメソッドを定義する。
 interactiveCanvas.prototype.colorBackground = function()
 {
- instanceOfInteractiveCanvas.hueOfBackground += Math.random() * 2; // 色相に僅かな揺らぎのある変化を与える。
+ instanceOfInteractiveCanvas.hueOfBackground += Math.random() * 1.0; // 色相に僅かな揺らぎのある変化を与える。
  if( instanceOfInteractiveCanvas.hueOfBackground > 360 )
  {
   instanceOfInteractiveCanvas.hueOfBackground -= 360;
@@ -2359,7 +2366,7 @@ interactiveCanvas.prototype.stopProcessingMouseDownEventTimer = function()
 interactiveCanvas.prototype.stopAllOfInteractiveCanvasTimer = function()
 {
  // イヴェント ハンドラーを除去する。
- canvas1.removeEventListener( 'mousedown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseDownEvent, false );
+ canvasElement.removeEventListener( 'mousedown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseDownEvent, false );
  document.removeEventListener( 'mouseup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseUpEvent, false );
  document.removeEventListener( 'keydown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingKeyDownEvent, false );
  document.removeEventListener( 'keyup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingKeyUpEvent, false );
@@ -2371,12 +2378,6 @@ interactiveCanvas.prototype.stopAllOfInteractiveCanvasTimer = function()
  {
   clearInterval( instanceOfInteractiveCanvas.timerForBackgroundColoring );
   instanceOfInteractiveCanvas.timerForBackgroundColoring = null;
- }
-
- if( instanceOfInteractiveCanvas.timerForTracePointer !== null )
- {
-  clearInterval( instanceOfInteractiveCanvas.timerForTracePointer );
-  instanceOfInteractiveCanvas.timerForTracePointer = null;
  }
 
  if( instanceOfInteractiveCanvas.timerForProcessingMouseDownEffect !== null )
@@ -2400,84 +2401,6 @@ interactiveCanvas.prototype.stopAllOfDrawingVisualEffectTimer = function()
  // 視覚効果の描画を止める。
  clearInterval( instanceOfInteractiveCanvas.timerForDrawingVisualEffect );
  instanceOfInteractiveCanvas.timerForDrawingVisualEffect = null;
-};
-
-// ポインターの軌跡を取得する為のタイマーを始動させるプロトタイプのメソッドを定義する。
-interactiveCanvas.prototype.startPointerTraceTimer = function()
-{
- let thisInteractiveCanvas = this;
-
- // ポインターの軌跡の描画用のCanvas要素のコンテキストを作成する。
- this.canvasLayerForDrawingPointer = document.createElement( 'canvas' );
- this.canvasLayerForDrawingPointer.width = this.pointerCircleSize * 2;
- this.canvasLayerForDrawingPointer.height = this.pointerCircleSize * 2;
- this.canvasLayerContextForDrawingPointer = this.canvasLayerForDrawingPointer.getContext( '2d' );
-
- this.canvasLayerContextForDrawingPointer.save(); // 描画設定を保存する。
- this.canvasLayerContextForDrawingPointer.beginPath();
-
- // 予めポインターの円を別のレイヤーに描画して置く。
-
- // 円形の色勾配を設定する。
- let radialGradientForPointerCircle = this.canvasLayerContextForDrawingPointer.createRadialGradient(
-  this.pointerCircleSize, // 中心のx座標。
-  this.pointerCircleSize, // 中心のy座標。
-  0,
-  this.pointerCircleSize, // 中心のx座標。
-  this.pointerCircleSize, // 中心のy座標。
-  this.pointerCircleSize // 半径。
- );
-
- radialGradientForPointerCircle.addColorStop( 0.0, 'hsla( 0, 0%, 100%, 1.00 )' ); // 開始円の色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.1, 'hsla( 0, 0%, 100%, 1.00 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.2, 'hsla( 0, 0%, 100%, 0.50 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.3, 'hsla( 0, 0%, 100%, 0.20 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.4, 'hsla( 0, 0%, 100%, 0.14 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.5, 'hsla( 0, 0%, 100%, 0.10 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.6, 'hsla( 0, 0%, 100%, 0.08 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.7, 'hsla( 0, 0%, 100%, 0.06 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.8, 'hsla( 0, 0%, 100%, 0.04 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 0.9, 'hsla( 0, 0%, 100%, 0.02 )' ); // 中間点の位置と色を設定する。
- radialGradientForPointerCircle.addColorStop( 1.0, 'hsla( 0, 0%, 100%, 0.00 )' ); // 終了点の色を設定する。
-
- this.canvasLayerContextForDrawingPointer.save(); // 描画設定を保存する。
- this.canvasLayerContextForDrawingPointer.clearRect(
-  0, 0,
-  this.canvasLayerContextForDrawingPointer.canvas.width,
-  this.canvasLayerContextForDrawingPointer.canvas.height ); // 元のCanvas レイヤーの内容を消去する。
-
- // 指定の色勾配で円弧を描画するように設定する。
- this.canvasLayerContextForDrawingPointer.beginPath(); // サブパスの作成を開始する。
- this.canvasLayerContextForDrawingPointer.arc(
-  this.pointerCircleSize, // 中心のx座標。
-  this.pointerCircleSize, // 中心のy座標。
-  this.pointerCircleSize, // 半径。
-  0, // 開始角度。
-  2 * Math.PI, // 終了角度。
-  false );
-
- this.canvasLayerContextForDrawingPointer.fillStyle = radialGradientForPointerCircle; // 塗り潰し色を代入する。
- this.canvasLayerContextForDrawingPointer.fill(); // パスの塗り潰しを実行する。
- this.canvasLayerContextForDrawingPointer.restore(); // 描画の設定を元に戻す。
-
- // ポインターの座標を取得して処理を行う関数をタイマーによるインターヴァル動作で実行する。
- this.timerForTracePointer = setInterval( function(){thisInteractiveCanvas.tracePointer();}, 20 );
-};
-
-// ポインターの軌跡を描く為のプロトタイプのメソッドを定義する。
-interactiveCanvas.prototype.tracePointer = function()
-{
- if( pointerCoordinate.isPointerInCanvasArea )
- {
-  canvasLayerContextForBackground.beginPath();
-
-  // 別のレイヤーに予め描画しておいたポインターの円の画像を適切な座標に適切な大きさで複写する。
-  canvasLayerContextForBackground.drawImage(
-  instanceOfInteractiveCanvas.canvasLayerForDrawingPointer, // 複写元の画像。
-  pointerCoordinate.coordinateInCanvasX - instanceOfInteractiveCanvas.pointerCircleSize, // 複写先の領域のx座標。
-  pointerCoordinate.coordinateInCanvasY - instanceOfInteractiveCanvas.pointerCircleSize ); // 複写先の領域のy座標。
- }
- instanceOfInteractiveCanvas.displayCanvas(); // 画面を表示させる。
 };
 
 // 画面を初期化する為のプロトタイプのメソッドを定義する。
@@ -2611,7 +2534,7 @@ interactiveCanvas.prototype.startTimerForProcessingVisualEffect = function()
 
  // 光球の描画に関する値を初期化する。
 
- instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] = 90;
+ instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] = 98;
  instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] = 0.98;
  
 
@@ -2767,13 +2690,13 @@ interactiveCanvas.prototype.processVisualEffect = function( countOfTimerForProce
 
   if( instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] > 0.2 )
   {
-   instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.01; // 透明度を上げる。
+   instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.0075; // 透明度を上げる。
   }else
   {
-   instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.0005; // 透明度を上げる。
+   instanceOfInteractiveCanvas.waveletCircleAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.0025; // 透明度を上げる。
   }
 
-  if( instanceOfInteractiveCanvas.waveletCircleLightness[countOfTimerForProcessingVisualEffect] > 60 )
+  if( instanceOfInteractiveCanvas.waveletCircleLightness[countOfTimerForProcessingVisualEffect] > 50 )
   {
    instanceOfInteractiveCanvas.waveletCircleLightness[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 1.0; // 明るさを下げる。
   }
@@ -2787,12 +2710,12 @@ interactiveCanvas.prototype.processVisualEffect = function( countOfTimerForProce
   // 光球の値を更新する。
   if( instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] > 0.2 )
   {
-   instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.005; // 透明度を上げる。
+   instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.025; // 透明度を上げる。
   }else
   {
-   instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.00025; // 透明度を上げる。
+   instanceOfInteractiveCanvas.waveLightBallAlpha[countOfTimerForProcessingVisualEffect] -= lightParticleCount[countOfTimerForProcessingVisualEffect] * 0.001; // 透明度を上げる。
   }
-  if( instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] > 60 )
+  if( instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] > 50 )
   {
    instanceOfInteractiveCanvas.waveLightBallLightness[countOfTimerForProcessingVisualEffect] -= poweredCountOfDrawing * 0.5; // 明るさを下げる。
   }
@@ -2936,11 +2859,17 @@ interactiveCanvas.prototype.drawVisualEffect = function()
     let waveLightBallLightness = instanceOfInteractiveCanvas.waveLightBallLightness[i];
     let waveLightBallAlpha = instanceOfInteractiveCanvas.waveLightBallAlpha[i];
     radialGradient.addColorStop( 0, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 開始円の色を設定する。
+    waveLightBallLightness *= 0.9;
+    waveLightBallAlpha *= 0.9;
+    radialGradient.addColorStop( 0.25, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 中間点の位置と色を設定する。
     waveLightBallLightness *= 0.75;
     waveLightBallAlpha *= 0.75;
     radialGradient.addColorStop( 0.5, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 中間点の位置と色を設定する。
-    waveLightBallLightness *= 0.5;
-    waveLightBallAlpha *= 0.5;
+    waveLightBallLightness *= 0.75;
+    waveLightBallAlpha *= 0.75;
+    radialGradient.addColorStop( 0.75, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 中間点の位置と色を設定する。
+    waveLightBallLightness *= 0.75;
+    waveLightBallAlpha *= 0.75;
     radialGradient.addColorStop( 1.0, 'hsla( ' + lightParticleHue[i] + ', 100%, ' + waveLightBallLightness + '%, ' + waveLightBallAlpha + ' )' ); // 終了点の色を設定する。
     canvasLayerContextForVisualEffect.fillStyle = radialGradient; // 塗り潰し色を代入する。
 
@@ -3171,6 +3100,7 @@ spectrumVisualizer.prototype.drawSpectrum = function()
  }
 
 
+ let amountOfSubtractionOfHueOfBar = 0;
  for( i = 0; i < limitOfCount; i++ )
  {
   // 左チャンネルのメーターを描画する。
@@ -3830,6 +3760,7 @@ function hideMusicItemNotInPlaylist()
  }else
  // 非選択項目を隠すチェックボックスにチェック マークが無くなったならば以下の処理を行う。
  {
+  let i = 0;
   for( i = 0; i < numberOfWholeFile; i++ )
   {
    // ファイル名のラジオ ボタンのリストを生成する。
@@ -3961,6 +3892,8 @@ function changeSelectionStatus( itemNumberInWhole )
   fileSelectionStatusList[itemNumberInWhole] = false;
  }
 
+ let i = 0;
+ let j = 0;
  for( i = 0, j = 0; i < numberOfWholeFile; i++ )
  {
   if( fileSelectionStatusList[i] === true )
@@ -4002,7 +3935,7 @@ function savePlaylist()
 
  textData = filePathList.join( "" );
  
- let webStorage = localStorage;
+ let webStorage = window.localStorage;
 
  webStorage.setItem( 'playlist', textData );
 
@@ -4023,7 +3956,7 @@ function loadPlaylist()
 
  let filePathList = [];
  let textData = ''; 
- let webStorage = localStorage;
+ let webStorage = window.localStorage;
 
  textData = webStorage.getItem( 'playlist' );
 
