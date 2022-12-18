@@ -182,6 +182,10 @@ Import Playlist:
 // 他のファイルのグローバル変数とこのファイルのグローバル変数の衝突を避ける為に、コンストラクターでモジュール全体のスコープを形成し、即時実行する。
 /** @constructor */
 let globalObjectOfThisProgram = function()
+
+// 他のファイルのグローバル変数とこのファイルのグローバル変数の衝突を避ける為に、コンストラクターでモジュール全体のスコープを形成し、即時実行する。
+/** @constructor */
+let globalObjectOfThisProgram = function()
 {
 ///////////////////////////////////////////////////////
 
@@ -1850,7 +1854,7 @@ interactiveCanvas.prototype.addMouseUpHandler = function()
 
  // 仮引数を持つ匿名関数をaddEventListener()の引数として渡してremoveEventListener()で削除出来るようにする為にその匿名関数を変数に代入して置く。
  this.variableForFunctionOfProcessingMouseUpEvent = function(){thisInteractiveCanvas.processMouseUpEvent();};
- document.addEventListener( 'mouseup', this.variableForFunctionOfProcessingMouseUpEvent, false );
+ canvasElement.addEventListener( 'mouseup', this.variableForFunctionOfProcessingMouseUpEvent, false );
  // 第3引数をtrueにすると子要素のイヴェント処理が優先される。
 };
 
@@ -2367,7 +2371,7 @@ interactiveCanvas.prototype.stopAllOfInteractiveCanvasTimer = function()
 {
  // イヴェント ハンドラーを除去する。
  canvasElement.removeEventListener( 'mousedown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseDownEvent, false );
- document.removeEventListener( 'mouseup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseUpEvent, false );
+ canvasElement.removeEventListener( 'mouseup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingMouseUpEvent, false );
  document.removeEventListener( 'keydown', instanceOfInteractiveCanvas.variableForFunctionOfProcessingKeyDownEvent, false );
  document.removeEventListener( 'keyup', instanceOfInteractiveCanvas.variableForFunctionOfProcessingKeyUpEvent, false );
  window.removeEventListener( 'blur', instanceOfInteractiveCanvas.variableForFunctionOfProcessingLusingWindowFocusEvent, false );
@@ -2401,6 +2405,10 @@ interactiveCanvas.prototype.stopAllOfDrawingVisualEffectTimer = function()
  // 視覚効果の描画を止める。
  clearInterval( instanceOfInteractiveCanvas.timerForDrawingVisualEffect );
  instanceOfInteractiveCanvas.timerForDrawingVisualEffect = null;
+
+ // 画面の描画を止める。
+ clearInterval( instanceOfInteractiveCanvas.timerForDisplayCanvas );
+ instanceOfInteractiveCanvas.timerForDisplayCanvas = null;
 };
 
 // 画面を初期化する為のプロトタイプのメソッドを定義する。
